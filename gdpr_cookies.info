@@ -1,0 +1,12 @@
+name = GDPR Cookies
+description = Control cookies from all sources with tarteaucitron.js
+backdrop = 1.x
+version = 1.x-1.0
+type = module
+package = Privacy
+dependencies[] = entity_plus
+configure = admin/config/system/gdpr-cookies/settings
+scripts[] = js/tarteaucitron/tarteaucitron.js
+scripts[] = js/tarteaucitron/tarteaucitron.services.js
+scripts[] = js/extended_services.js
+scripts[] = js/init_tarteaucitron.js

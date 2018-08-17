@@ -1,0 +1,12 @@
+{
+  "_config_name": "gdpr_cookies.settings",
+  "gdpr_cookies_hashtag": "",
+  "gdpr_cookies_high_privacy": 0,
+  "gdpr_cookies_orientation": "bottom",
+  "gdpr_cookies_adblocker": 0,
+  "gdpr_cookies_show_alert_small": 0,
+  "gdpr_cookies_cookieslist": 0,
+  "gdpr_cookies_remove_credit": 0,
+  "gdpr_cookies_default_rejected": 0,
+  "gdpr_cookies_page_compression": 1
+}

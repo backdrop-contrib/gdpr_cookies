@@ -1,0 +1,598 @@
+<?php
+require_once('src/Entity/ThirdPartyServiceEntityInterface.php');
+
+/**
+ * Implements hook_page_attachments().
+ */
+function gdpr_cookies_init() {
+
+  require_once("src/CookiesFactory.php");
+
+  backdrop_add_library('gdpr_cookies', 'gdpr_cookies');
+
+  backdrop_add_js(array(
+    'gdpr_cookies' => array(
+      'hashtag' => config_get('gdpr_cookies.settings','gdpr_cookies_hashtag'),
+      'highPrivacy' => config_get('gdpr_cookies.settings','gdpr_cookies_high_privacy'),
+      'orientation' => config_get('gdpr_cookies.settings','gdpr_cookies_orientation'),
+      'adblocker' => config_get('gdpr_cookies.settings','gdpr_cookies_adblocker'),
+      'showAlertSmall' => config_get('gdpr_cookies.settings','gdpr_cookies_show_alert_small'),
+      'cookieslist' => config_get('gdpr_cookies.settings','gdpr_cookies_cookieslist'),
+      'removeCredit' => config_get('gdpr_cookies.settings','gdpr_cookies_remove_credit'),
+      'defaultRejected' => config_get('gdpr_cookies.settings','gdpr_cookies_default_rejected'),
+    ),
+  ), 'setting');
+
+}
+
+function gdpr_cookies_exit() {
+  // Get current path value.
+  $current_path = function_exists('current_path') ? current_path() : $_GET['q'];
+
+  // The content type of the page must be text/html to proceed. All other
+  // content types must be ignored - the name of the module is minifyhtml
+  // after all.
+  // Make sure to exclude image style images (is this even required anymore??).
+  // Make sure the buffer has a length.
+  if (stripos(backdrop_get_http_header('content-type'), 'text/html') !== FALSE && !is_file($current_path) && ob_get_length()) {
+
+    // Catch the output buffer. Converted from ob_get_clean().
+    $page = ob_get_contents();
+
+    // If the content should be encoded, try to decode it.
+    $decoded = FALSE;
+    if (config_get('gdpr_cookies.settings','gdpr_cookies_page_compression') && extension_loaded('zlib')) {
+      $decoded = @gzinflate(substr(substr($page, 10), 0, -8));
+      if ($decoded) {
+        $page = $decoded;
+      }
+    }
+
+
+    $factory = new CookiesFactory();
+    $vanisher = $factory->createThirdPartyServicesVanisher();
+    $page = $vanisher->vanish($page);
+
+
+    // If the content was decoded before being minified, it needs to be
+    // re-encoded.
+    if (config_get('gdpr_cookies.settings','gdpr_cookies_page_compression') && extension_loaded('zlib') && $decoded) {
+      $page = gzencode($page, 9, FORCE_GZIP);
+    }
+
+    // Re-populate the output buffer.
+    ob_clean();
+    print $page;
+  }
+
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function gdpr_cookies_module_implements_alter(&$implementations, $hook) {
+
+  // Move this module's hook_exit() to the end of the call order.
+  if ($hook == 'exit' && isset($implementations['gdpr_cookies'])) {
+    $group = $implementations['gdpr_cookies'];
+    unset($implementations['gdpr_cookies']);
+    $implementations['gdpr_cookies'] = $group;
+  }
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function gdpr_cookies_library() {
+  $libraries['gdpr-cookies'] = array(
+    'title' => 'GDPR Cookies',
+    'version' => '1.0',
+    'js' => array(
+      backdrop_get_path('module', 'gdpr_cookies') . '/js/tarteaucitron/tarteaucitron.js' => array(
+        'type' => 'file',
+        'scope' => 'footer',
+        'weight' => -4,
+      ),
+      backdrop_get_path('module', 'gdpr_cookies') . '/js/init_tarteaucitron.js' => array(
+        'type' => 'file',
+        'scope' => 'footer',
+        'weight' => -3,
+      ),
+      backdrop_get_path('module', 'gdpr_cookies') . '/js/tarteaucitron/tarteaucitron.services.js' => array(
+        'type' => 'file',
+        'scope' => 'footer',
+        'weight' => -2,
+      ),
+      backdrop_get_path('module', 'gdpr_cookies') . '/js/extended_services.js' => array(
+        'type' => 'file',
+        'scope' => 'footer',
+        'weight' => -1,
+      ),
+    ),
+
+  );
+  return $libraries;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function gdpr_cookies_permission() {
+  $permissions = array(
+    'administer gdpr cookies' => array(
+      'title' => t('Administer task types'),
+      'description' => t('Allows users to configure GDPR Cookies.'),
+      'restrict access' => TRUE,
+    ),
+    'create third_party_service entities' => array(
+      'title' => t('Create third_party_service'),
+      'description' => t('Allows users to create third_party_service.'),
+      'restrict access' => TRUE,
+    ),
+    'view all third_party_service entity' => array(
+      'title' => t('View third_party_service'),
+      'description' => t('Allows users to view third_party_service.'),
+      'restrict access' => TRUE,
+    ),
+    'edit third_party_service entities' => array(
+      'title' => t('Edit any third_party_service'),
+      'description' => t('Allows users to edit any third_party_service.'),
+      'restrict access' => TRUE,
+    ),
+  );
+
+  return $permissions;
+}
+
+function gdpr_cookies_menu() {
+  return array(
+    'admin/config/system/gdpr-cookies/settings' => array(
+      'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+      'title' => t('Gdpr cookies Settings'),
+      'description' => 'Configure GDPR Cookies',
+      'page callback' => 'backdrop_get_form',
+      'page arguments' => array('gdpr_cookies_settings_page'),
+      'access arguments' => array('administer gdpr cookies'),
+    ),
+
+    'admin/config/system/gdpr-cookies/third-party-service/%third_party_service/delete' => array(
+      'title' => 'Delete',
+      'type' => MENU_NORMAL_ITEM,
+      'page callback' => 'backdrop_get_form',
+      'page arguments' => array('third_party_service_form_delete_confirm', 5),
+      'access arguments' => array('edit third_party_service entities'),
+    ),
+
+    'admin/config/system/gdpr-cookies/third-party-service' => array(
+      'title' => 'List of Third Party Services',
+      'description' => 'List all Third Party Services',
+      'type' => MENU_LOCAL_TASK,
+      'page callback' => 'third_party_service_info_page',
+      'access arguments' => array('view all third_party_service entity'),
+    ),
+
+    'admin/config/system/gdpr-cookies/third-party-service/add' => array(
+      'title' => 'Add Third Party Service',
+      'page callback' => 'third_party_service_add',
+      'type' => MENU_NORMAL_ITEM,
+      'access arguments' => array('edit third_party_service entities'),
+    ),
+    'admin/config/system/gdpr-cookies/third-party-service/%third_party_service' => array(
+      'title' => 'Edit Third Party Service',
+      'page callback' => 'backdrop_get_form',
+      'page arguments' => array('third_party_service_form', 5),
+      'type' => MENU_NORMAL_ITEM,
+      'access arguments' => array('edit third_party_service entities'),
+    ),
+  );
+}
+
+/**
+ * Provides a wrapper on the edit form to add a new entity.
+ */
+function third_party_service_add() {
+  $entity = entity_get_controller('third_party_service')->create();
+  return backdrop_get_form('third_party_service_form', $entity);
+}
+
+
+/**
+ * Form function to create an entity_example_basic entity.
+ *
+ * The pattern is:
+ * - Set up the form for the data that is specific to your
+ *   entity: the columns of your base table.
+ * - Call on the Field API to pull in the form elements
+ *   for fields attached to the entity.
+ */
+function third_party_service_form($form, &$form_state, $entity) {
+
+  $factory = new CookiesFactory();
+  $vanisher = $factory->createThirdPartyServicesVanisher();
+
+  $third_party_service = $entity;
+  $form['basic_entity'] = array(
+    '#type' => 'value',
+    '#value' => $entity,
+  );
+
+  $form['name'] = [
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+    '#description' => t('This is the name of the service.'),
+    '#default_value' => property_exists($third_party_service, 'name') ?  $third_party_service->getName() : '',
+  ];
+
+  $form['vanisher'] = [
+    '#type' => 'select',
+    '#title' => 'Vanisher',
+    '#description' => t('Choose the vanisher for the service control.'),
+    '#default_value' => property_exists($third_party_service, 'vanisher') ?  $third_party_service->getVanisher() : '',
+    '#options' => $vanisher->getInstalledVanisherNames() ?: [], // todo lars
+    '#empty_value' => '',
+    '#required' => TRUE,
+  ];
+
+  $form['enabled'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Enable Service Control?'),
+    '#description' => t('If activated this service will be controlled with tarteaucitron.'),
+    '#default_value' => property_exists($third_party_service, 'enabled') ?  $third_party_service->enabled() : FALSE,
+  ];
+
+  $form['optional_fields'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Optional Fields'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  ];
+
+  $form['optional_fields']['info'] = [
+    '#type' => 'textarea',
+    '#title' => t('Info Content'),
+    '#description' => t('This content will be displayed instead until the user activates the service.'),
+    '#default_value' => property_exists($third_party_service, 'info') ?  $third_party_service->getInfo() : '',
+    '#required' => FALSE,
+  ];
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+    '#weight' => 100,
+  );
+
+  return $form;
+}
+
+function third_party_service_form_delete_confirm($form, &$form_state, $entity) {
+
+  $form['_third_party_service'] = array(
+    '#type' => 'value',
+    '#value' => $entity,
+  );
+
+  return confirm_form($form, t('Are you sure you want to delete ' . $entity->getName() . ' ?'),
+    isset($_GET['destination']) ? $_GET['destination'] : "admin/config/system/gdpr-cookies/third-party-service", t('This action cannot be undone.'), t('Delete'), t('Cancel'));
+
+}
+
+
+function third_party_service_form_delete_confirm_submit($form, &$form_state) {
+  if ($form_state['values']['confirm']) {
+    $entity = $form_state['values']['_third_party_service'];
+    backdrop_set_message(t('Third Party Service ' . $entity->getName() . ' will get deleted.'));
+    third_party_service_delete(array($entity->id));
+    backdrop_set_message(t('Third Party Service has been deleted successfully.'));
+  }
+  $form_state['redirect'] = 'admin/config/system/gdpr-cookies/third-party-service';
+}
+
+
+/**
+ * Use the controller to delete the entity.
+ */
+function third_party_service_delete($entity) {
+  entity_get_controller('third_party_service')->delete($entity);
+}
+
+
+/**
+ * Validation handler for entity_example_basic_add_form form.
+ *
+ * We pass things straight through to the Field API to handle validation
+ * of the attached fields.
+ */
+function third_party_service_form_validate($form, &$form_state) {
+  field_attach_form_validate('third_party_service', $form_state['values']['basic_entity'], $form, $form_state);
+}
+
+
+/**
+ * Form submit handler: Submits basic_add_form information.
+ */
+function third_party_service_form_submit($form, &$form_state) {
+  $entity = $form_state['values']['basic_entity'];
+
+  $entity->name = $form_state['values']['name'];
+  $entity->label = $form_state['values']['name'];
+  $entity->enabled = $form_state['values']['enabled'];
+  $entity->vanisher = $form_state['values']['vanisher'];
+  $entity->info = $form_state['values']['info'];
+
+
+  $id = third_party_service_save($entity);
+
+
+  if ($id) {
+    backdrop_set_message(t('Saved the %label Third Party Service.', [
+      '%label' => $entity->label(),
+    ]));
+  }
+  else {
+    backdrop_set_message(t('The %label Third Party Service was not saved.', [
+      '%label' => $entity->label(),
+    ]));
+  }
+
+  $form_state['redirect'] = 'admin/config/system/gdpr-cookies/third-party-service';
+}
+
+/**
+ * We save the entity by calling the controller.
+ */
+function third_party_service_save(&$entity) {
+  return entity_get_controller('third_party_service')->save($entity);
+}
+
+/**
+ * Basic information for the page.
+ */
+function third_party_service_info_page() {
+  $content['table'] = third_party_service_list_entities();
+  return $content;
+}
+
+/**
+ * Returns a render array with all entity_example_basic entities.
+ *
+ * In this basic example we know that there won't be many entities,
+ * so we'll just load them all for display. See pager_example.module
+ * to implement a pager. Most implementations would probably do this
+ * with the contrib Entity API module, or a view using views module,
+ * but we avoid using non-core features in the Examples project.
+ *
+ * @see pager_example.module
+ */
+function third_party_service_list_entities() {
+
+
+  $content = array();
+
+
+  $content['add_button'] = array(
+    '#type' => 'markup',
+    '#markup' => '<a href="/admin/config/system/gdpr-cookies/third-party-service/add">' . t('+ Add third party service') . '</a>',
+  );
+
+
+  // Load all of our entities.
+  $entities = third_party_service_load_multiple();
+  if (!empty($entities)) {
+    foreach ($entities as $entity) {
+      // Create tabular rows for our entities.
+      $rows[] = array(
+        'data' => array(
+          'name' => $entity->getName(),
+          'vanisher' => $entity->getVanisher(),
+          'enabled' => $entity->isEnabled() ? t('Enabled') : t('Disabled'),
+          'edit' => "<a href='/admin/config/system/gdpr-cookies/third-party-service/" . $entity->getName() . "'>" . t('Edit') . "</a>",
+          'delete' => "<a href='/admin/config/system/gdpr-cookies/third-party-service/" . $entity->getName() . "/delete'>" . t('Delete') . "</a>",
+        )
+      );
+    }
+    // Put our entities into a themed table. See theme_table() for details.
+    $content['entity_table'] = array(
+      '#theme' => 'table',
+      '#rows' => $rows,
+      '#header' => array(
+        t('Name'),
+        t('Vanisher'),
+        t('Activated'),
+        '',
+        ''
+      ),
+    );
+  }
+
+  else {
+    // There were no entities. Tell the user.
+    $content[] = array(
+      '#type' => 'item',
+      '#markup' => t('No third_party_service entities currently exist.'),
+    );
+  }
+  return $content;
+}
+
+
+/**
+ * Loads multiple basic entities.
+ *
+ * We only need to pass this request along to entity_load(), which
+ * will in turn call the load() method of our entity controller class.
+ */
+function third_party_service_load_multiple($basic_ids = FALSE, $conditions = array(), $reset = FALSE) {
+  return entity_load('third_party_service', $basic_ids, $conditions, $reset);
+}
+
+function third_party_service_load($id, $reset = FALSE) {
+  $ret = third_party_service_load_multiple(array($id), array(), $reset);
+  return $ret ? reset($ret) : FALSE;
+}
+
+/**
+ * Yet another FAPI form.
+ */
+function gdpr_cookies_settings_page() {
+  $form = array();
+  $form['gdpr_cookies_hashtag'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Hashtag'),
+    '#description' => t('Automatically open the panel with the hashtag.'),
+    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_hashtag'),
+  );
+
+  $form['gdpr_cookies_high_privacy'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('High Privacy'),
+    '#description' => t('Disabling the auto consent feature on navigation?'),
+    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_high_privacy') ? TRUE : FALSE,
+  );
+
+  $form['gdpr_cookies_orientation'] = array(
+    '#type' => 'radios',
+    '#title' => t('Orientation'),
+    '#description' => t('The orientation of the big banner.'),
+    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_orientation'),
+    '#options' => array(
+      'top' => t('Top'),
+      'bottom' => t('Bottom'),
+    ),
+  );
+
+  $form['gdpr_cookies_adblocker'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Ad-Blocker'),
+    '#description' => t('Display a message if an adblocker is detected.'),
+    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_adblocker') ? TRUE : FALSE,
+  );
+
+  $form['gdpr_cookies_show_alert_small'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show Alert Small'),
+    '#description' => t('Show the small banner on bottom right?'),
+    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_show_alert_small') ? TRUE : FALSE,
+  );
+
+  $form['gdpr_cookies_cookieslist'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Cookies List'),
+    '#description' => t('Display the list of cookies installed?'),
+    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_cookieslist') ? TRUE : FALSE,
+  );
+
+  $form['gdpr_cookies_remove_credit'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Remove Credit'),
+    '#description' => t('Remove the credit link?'),
+    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_remove_credit') ? TRUE : FALSE,
+  );
+
+  $form['gdpr_cookies_default_rejected'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Default Rejected'),
+    '#description' => t('Should all services be rejected by default?'),
+    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_default_rejected') ? TRUE : FALSE,
+  ];
+
+  // Add a submit button
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+  );
+
+  return $form;
+}
+
+/**
+ * Submit handler for module_settings_form().
+ */
+function gdpr_cookies_settings_page_submit($form, &$form_state) {
+  $config = config('gdpr_cookies.settings');
+  $config->set('gdpr_cookies_hashtag', $form_state['values']['gdpr_cookies_hashtag']);
+  $config->set('gdpr_cookies_high_privacy', $form_state['values']['gdpr_cookies_high_privacy']);
+  $config->set('gdpr_cookies_orientation', $form_state['values']['gdpr_cookies_orientation']);
+  $config->set('gdpr_cookies_adblocker', $form_state['values']['gdpr_cookies_adblocker']);
+  $config->set('gdpr_cookies_show_alert_small', $form_state['values']['gdpr_cookies_show_alert_small']);
+  $config->set('gdpr_cookies_cookieslist', $form_state['values']['gdpr_cookies_cookieslist']);
+  $config->set('gdpr_cookies_remove_credit', $form_state['values']['gdpr_cookies_remove_credit']);
+  $config->set('gdpr_cookies_default_rejected', $form_state['values']['gdpr_cookies_default_rejected']);
+  $config->save();
+}
+
+
+  /**
+ * Implements hook_entity_info().
+ */
+function gdpr_cookies_entity_info() {
+  return array(
+    'third_party_service' => array(
+      'label' => t('Third Party Service Entity'),
+      'plural label' => t('Third Party Service Entities'),
+      'entity class' => 'ThirdPartyServiceEntity',
+      'controller class' => 'EntityPlusControllerExportable',
+      'base table' => 'third_party_service',
+      'entity keys' => array(
+        'id' => 'id',
+        "label" => "label",
+        "name" => "name",
+        "info" => "info",
+        "enabled" => "enabled",
+        "vanisher" => "vanisher",
+      ),
+      'fieldable' => FALSE,
+      'metadata controller class' => FALSE,
+      'access callback' => 'search_api_entity_access',
+      'module' => 'gdpr_cookies',
+      'exportable' => TRUE,
+      'label callback' => 'entity_class_label',
+      'uri callback' => 'entity_class_uri',
+    ),
+  );
+}
+
+function gdpr_cookies_default_third_party_service() {
+  return array();
+}
+
+/**
+ * Implements hook_js_alter().
+ */
+function gdpr_cookies_js_alter(&$js) {
+  $base = backdrop_get_path('module', 'gdpr_cookies');
+  foreach ($js as $path => &$values) {
+
+    if (
+      isset($values['data']) &&
+      is_string($values['data']) &&
+      (strpos($values['data'], $base . '/js/tarteaucitron/tarteaucitron.js') !== FALSE ||
+        strpos($values['data'], $base . '/js/init_tarteaucitron.js') !== FALSE ||
+        strpos($values['data'], $base . '/js/tarteaucitron/tarteaucitron.services.js') !== FALSE)) {
+      $values['preprocess'] = FALSE;
+    }
+  }
+}
+
+
+/**
+ * Implements hook_config_info().
+ */
+function gdpr_cookies_config_info() {
+  $prefixes['gdpr_cookies.settings'] = array(
+    'label' => t('Gdpr cookies settings'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+
+
+/**
+ * Implements hook_autoload_info().
+ */
+function gdpr_cookies_autoload_info() {
+  return array(
+    'CookiesFactory' => 'src/Service/CookiesFactory.php',
+    'ThirdPartyServiceEntity' => 'src/Entity/ThirdPartyServiceEntity.php',
+  );
+}

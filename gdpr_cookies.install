@@ -1,0 +1,83 @@
+<?php
+
+/**
+ * @file
+ * gdpr_cookies.install
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function gdpr_cookies_schema() {
+  $schema['third_party_service'] = array(
+    'description' => 'Stores information about all defined entity_test types.',
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique entity_test type ID.',
+      ),
+      'name' => array(
+        'description' => 'The name of the third party service.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ),
+      'info' => array(
+        'description' => 'The info content of the third party service.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'label' => array(
+        'description' => 'The human-readable name of this entity_test type.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'enabled' => array(
+        'description' => 'The flag indicating if service control is activated.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'vanisher' => array(
+        'description' => 'The name of the vanisher.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'status' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        // Set the default to ENTITY_CUSTOM without using the constant as it is
+        // not safe to use it at this point.
+        'default' => 0x01,
+        'size' => 'tiny',
+        'description' => 'The exportable status of the entity.',
+      ),
+      'module' => array(
+        'description' => 'The name of the providing module if the entity has been defined in code.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('id'),
+    'unique keys' => array(
+      'name' => array('name'),
+    ),
+  );
+  return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function gdpr_cookies_uninstall() {
+  backdrop_uninstall_schema('gdpr_cookies');
+}
