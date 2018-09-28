@@ -52,8 +52,9 @@ without proper consent.
 This initial port to Backdrop is from Drupal release 7.x-1.3.
 
 ## Dependencies
-+ In Backdrop this module is dependent on the Entity Plus module that
-provides some entity functions omitted from core. 
++ In Backdrop this module is dependent on the Entity Plus module 
+(https://github.com/backdrop-contrib/entity_plus) 
+that provides some entity functions omitted from core. 
 + The tarteaucitron script library is included in the module.
 
 ## Installation
