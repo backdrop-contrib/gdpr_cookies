@@ -237,7 +237,7 @@ function third_party_service_form($form, &$form_state, $entity) {
     '#type' => 'checkbox',
     '#title' => t('Enable Service Control?'),
     '#description' => t('If activated this service will be controlled with tarteaucitron.'),
-    '#default_value' => property_exists($third_party_service, 'enabled') ?  $third_party_service->enabled() : FALSE,
+    '#default_value' => property_exists($third_party_service, 'enabled') ?  $third_party_service->isEnabled() : FALSE,
   ];
 
   $form['optional_fields'] = [
