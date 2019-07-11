@@ -23,6 +23,8 @@ function gdpr_cookies_init() {
     ),
   ), 'setting');
 
+  // Add style modifications for Backdrop
+  backdrop_add_css(backdrop_get_path('module', 'gdpr_cookies') . '/gdpr_cookies.css');
 }
 
 function gdpr_cookies_exit() {
@@ -488,12 +490,12 @@ function gdpr_cookies_settings_page() {
     '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_remove_credit') ? TRUE : FALSE,
   );
 
-  $form['gdpr_cookies_default_rejected'] = [
+  $form['gdpr_cookies_default_rejected'] = array(
     '#type' => 'checkbox',
     '#title' => t('Default Rejected'),
     '#description' => t('Should all services be rejected by default?'),
     '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_default_rejected') ? TRUE : FALSE,
-  ];
+  );
 
   // Add a submit button
   $form['actions']['#type'] = 'actions';
@@ -519,6 +521,8 @@ function gdpr_cookies_settings_page_submit($form, &$form_state) {
   $config->set('gdpr_cookies_remove_credit', $form_state['values']['gdpr_cookies_remove_credit']);
   $config->set('gdpr_cookies_default_rejected', $form_state['values']['gdpr_cookies_default_rejected']);
   $config->save();
+
+  backdrop_set_message(t('Settings saved for GDPR Cookies.'));
 }
 
 
