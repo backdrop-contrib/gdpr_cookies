@@ -9,29 +9,29 @@
  * Implements hook_schema().
  */
 function gdpr_cookies_schema() {
-  $schema['third_party_service'] = array(
+  $schema['gdpr_cookies_services'] = array(
     'description' => 'Stores information about all defined entity_test types.',
     'fields' => array(
       'id' => array(
         'type' => 'serial',
         'not null' => TRUE,
-        'description' => 'Primary Key: Unique entity_test type ID.',
+        'description' => 'Primary Key: Unique ID.',
       ),
       'name' => array(
-        'description' => 'The name of the third party service.',
+        'description' => 'The name of the third-party service.',
         'type' => 'varchar',
         'length' => 32,
         'not null' => TRUE,
       ),
       'info' => array(
-        'description' => 'The info content of the third party service.',
+        'description' => 'The info content of the third-party service.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
         'default' => '',
       ),
       'label' => array(
-        'description' => 'The human-readable name of this entity_test type.',
+        'description' => 'The human-readable name of the third-party service.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
@@ -45,23 +45,23 @@ function gdpr_cookies_schema() {
         'default' => '',
       ),
       'vanisher' => array(
-        'description' => 'The name of the vanisher.',
+        'description' => 'The name of the relevant vanisher.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
         'default' => '',
       ),
       'status' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        // Set the default to ENTITY_CUSTOM without using the constant as it is
-        // not safe to use it at this point.
-        'default' => 0x01,
-        'size' => 'tiny',
-        'description' => 'The exportable status of the entity.',
+          'type' => 'int',
+          'not null' => TRUE,
+          // Set the default to ENTITY_CUSTOM without using the constant as it is
+          // not safe to use it at this point.
+          'default' => 0x01,
+          'size' => 'tiny',
+          'description' => 'The exportable status of the vanisher.',
       ),
       'module' => array(
-        'description' => 'The name of the providing module if the entity has been defined in code.',
+        'description' => 'The name of the providing module if the vanisher has been defined in code.',
         'type' => 'varchar',
         'length' => 255,
         'not null' => FALSE,
@@ -80,4 +80,77 @@ function gdpr_cookies_schema() {
  */
 function gdpr_cookies_uninstall() {
   backdrop_uninstall_schema('gdpr_cookies');
+}
+
+/**
+ * Implements hook_update().
+ * Rename table and modify some descriptions.
+ */
+function gdpr_cookies_update_1001() {
+
+  $spec = array();
+
+  db_rename_table('third_party_service', 'gdpr_cookies_services');
+
+  $spec = array(
+    'type' => 'serial',
+    'not null' => TRUE,
+    'description' => 'Primary Key: Unique ID.',
+  );
+  db_change_field('gdpr_cookies_services', 'id', 'id', $spec);
+
+  $spec = array(
+    'description' => 'The name of the third-party service.',
+    'type' => 'varchar',
+    'length' => 32,
+    'not null' => TRUE,
+    'default'  => '',
+  );
+  db_change_field('gdpr_cookies_services', 'name', 'name', $spec);
+
+  $spec = array(
+    'description' => 'The info content of the third-party service.',
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => TRUE,
+    'default' => '',
+  );
+  db_change_field('gdpr_cookies_services', 'info', 'info', $spec);
+
+  $spec = array(
+    'description' => 'The human-readable name of the third-party service.',
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => TRUE,
+    'default' => '',
+  );
+  db_change_field('gdpr_cookies_services', 'label', 'label', $spec);
+
+  $spec = array(
+    'description' => 'The name of the relevant vanisher.',
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => TRUE,
+    'default' => '',
+  );
+  db_change_field('gdpr_cookies_services', 'vanisher', 'vanisher', $spec);
+
+  $spec = array(
+    'type' => 'int',
+    'not null' => TRUE,
+    // Set the default to ENTITY_CUSTOM without using the constant as it is
+    // not safe to use it at this point.
+    'default' => 0x01,
+    'size' => 'tiny',
+    'description' => 'The exportable status of the vanisher.',
+  );
+  db_change_field('gdpr_cookies_services', 'status', 'status', $spec);
+
+  $spec = array(
+    'description' => 'The name of the providing module if the vanisher has been defined in code.',
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => FALSE,
+  );
+  db_change_field('gdpr_cookies_services', 'module', 'module', $spec);
 }
