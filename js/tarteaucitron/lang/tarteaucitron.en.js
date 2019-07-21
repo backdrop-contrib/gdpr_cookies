@@ -8,7 +8,7 @@ tarteaucitron.lang = {
   "alertBigClick": "If you continue to browse this website,",
   "alertBig": "you are allowing all third-party services",
 
-  "alertBigPrivacy": "This site uses cookies. In the privacy settings, you can choose which services to allow.",
+  "alertBigPrivacy": "This site uses cookies. In the privacy settings you can choose which services to allow.",
   "alertSmall": "Privacy settings",
   "personalize": "Personalize",
   "acceptAll": "OK, accept all",
@@ -23,7 +23,7 @@ tarteaucitron.lang = {
   "noCookie": "This service does not use 'cookies'",
   "useCookie": "This service includes",
   "useCookieCurrent": "This service has installed",
-  "useNoCookie": "This service has not installed any cookie.",
+  "useNoCookie": "This service has not installed any cookies.",
   "more": "Read more",
   "source": "View the official website",
   "credit": "Cookies manager by tarteaucitron.js",
