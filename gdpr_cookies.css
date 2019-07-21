@@ -1,0 +1,11 @@
+/* modified styles for Backdrop */
+
+/* Do not display on the 'site is in maintenance page */
+.maintenance-page #tarteaucitronRoot {
+    display: none;
+}
+
+/* Do not display over admin bar. */
+html.admin-bar #tarteaucitronAlertBig {
+    display: none !important;
+}

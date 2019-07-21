@@ -1,11 +1,8 @@
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/SASAICAGENCY)
+# tarteaucitron.js
 
-
-tarteaucitron.js
-================
 Comply to the european cookie law is simple with the french *tarte au citron*.
 
-# What is this script?
+## What is this script?
 The european cookie law regulates the management of cookies and you should ask your visitors their consent before exposing them to third party services.
 
 Clearly this script will:
