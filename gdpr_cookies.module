@@ -23,6 +23,8 @@ function gdpr_cookies_init() {
     ),
   ), 'setting');
 
+  // Add style modifications for Backdrop
+  backdrop_add_css(backdrop_get_path('module', 'gdpr_cookies') . '/gdpr_cookies.css');
 }
 
 function gdpr_cookies_exit() {
@@ -519,6 +521,8 @@ function gdpr_cookies_settings_page_submit($form, &$form_state) {
   $config->set('gdpr_cookies_remove_credit', $form_state['values']['gdpr_cookies_remove_credit']);
   $config->set('gdpr_cookies_default_rejected', $form_state['values']['gdpr_cookies_default_rejected']);
   $config->save();
+
+  backdrop_set_message(t('Settings saved for GDPR Cookies.'));
 }
 
 
