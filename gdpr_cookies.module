@@ -126,19 +126,19 @@ function gdpr_cookies_permission() {
       'description' => t('Allows users to configure GDPR Cookies.'),
       'restrict access' => TRUE,
     ),
-    'create third_party_service entities' => array(
-      'title' => t('Create third_party_service'),
-      'description' => t('Allows users to create third_party_service.'),
+    'create gdpr_cookies_service entities' => array(
+      'title' => t('Create a gdpr_cookies_service'),
+      'description' => t('Allows users to create gdpr_cookies_services.'),
       'restrict access' => TRUE,
     ),
-    'view all third_party_service entity' => array(
-      'title' => t('View third_party_service'),
-      'description' => t('Allows users to view third_party_service.'),
+    'view all gdpr_cookies_service entity' => array(
+      'title' => t('View a gdpr_cookies_service'),
+      'description' => t('Allows users to view gdpr_cookies_services.'),
       'restrict access' => TRUE,
     ),
-    'edit third_party_service entities' => array(
-      'title' => t('Edit any third_party_service'),
-      'description' => t('Allows users to edit any third_party_service.'),
+    'edit gdpr_cookies_service entities' => array(
+      'title' => t('Edit any gdpr_cookies_service'),
+      'description' => t('Allows users to edit any gdpr_cookies_service.'),
       'restrict access' => TRUE,
     ),
   );
@@ -157,34 +157,34 @@ function gdpr_cookies_menu() {
       'access arguments' => array('administer gdpr cookies'),
     ),
 
-    'admin/config/system/gdpr-cookies/third-party-service/%third_party_service/delete' => array(
+    'admin/config/system/gdpr-cookies/gdpr-cookies-service/%gdpr_cookies_service/delete' => array(
       'title' => 'Delete',
       'type' => MENU_NORMAL_ITEM,
       'page callback' => 'backdrop_get_form',
-      'page arguments' => array('third_party_service_form_delete_confirm', 5),
-      'access arguments' => array('edit third_party_service entities'),
+      'page arguments' => array('gdpr_cookies_service_form_delete_confirm', 5),
+      'access arguments' => array('edit gdpr_cookies_service entities'),
     ),
 
-    'admin/config/system/gdpr-cookies/third-party-service' => array(
+    'admin/config/system/gdpr-cookies/gdpr-cookies-service' => array(
       'title' => 'List of Third Party Services',
       'description' => 'List all Third Party Services',
       'type' => MENU_LOCAL_TASK,
-      'page callback' => 'third_party_service_info_page',
-      'access arguments' => array('view all third_party_service entity'),
+      'page callback' => 'gdpr_cookies_service_info_page',
+      'access arguments' => array('view all gdpr_cookies_service entity'),
     ),
 
-    'admin/config/system/gdpr-cookies/third-party-service/add' => array(
+    'admin/config/system/gdpr-cookies/gdpr-cookies-service/add' => array(
       'title' => 'Add Third Party Service',
-      'page callback' => 'third_party_service_add',
+      'page callback' => 'gdpr_cookies_service_add',
       'type' => MENU_NORMAL_ITEM,
-      'access arguments' => array('edit third_party_service entities'),
+      'access arguments' => array('edit gdpr_cookies_service entities'),
     ),
-    'admin/config/system/gdpr-cookies/third-party-service/%third_party_service' => array(
+    'admin/config/system/gdpr-cookies/gdpr-cookies-service/%gdpr_cookies_service' => array(
       'title' => 'Edit Third Party Service',
       'page callback' => 'backdrop_get_form',
-      'page arguments' => array('third_party_service_form', 5),
+      'page arguments' => array('gdpr_cookies_service_form', 5),
       'type' => MENU_NORMAL_ITEM,
-      'access arguments' => array('edit third_party_service entities'),
+      'access arguments' => array('edit gdpr_cookies_service entities'),
     ),
   );
 }
@@ -192,9 +192,9 @@ function gdpr_cookies_menu() {
 /**
  * Provides a wrapper on the edit form to add a new entity.
  */
-function third_party_service_add() {
-  $entity = entity_get_controller('third_party_service')->create();
-  return backdrop_get_form('third_party_service_form', $entity);
+function gdpr_cookies_service_add() {
+  $entity = entity_get_controller('gdpr_cookies_service')->create();
+  return backdrop_get_form('gdpr_cookies_service_form', $entity);
 }
 
 
@@ -207,12 +207,12 @@ function third_party_service_add() {
  * - Call on the Field API to pull in the form elements
  *   for fields attached to the entity.
  */
-function third_party_service_form($form, &$form_state, $entity) {
+function gdpr_cookies_service_form($form, &$form_state, $entity) {
 
   $factory = new CookiesFactory();
   $vanisher = $factory->createThirdPartyServicesVanisher();
 
-  $third_party_service = $entity;
+  $gdpr_cookies_service = $entity;
   $form['basic_entity'] = array(
     '#type' => 'value',
     '#value' => $entity,
@@ -222,15 +222,18 @@ function third_party_service_form($form, &$form_state, $entity) {
     '#type' => 'textfield',
     '#title' => t('Name'),
     '#description' => t('This is the name of the service.'),
-    '#default_value' => property_exists($third_party_service, 'name') ?  $third_party_service->getName() : '',
-  );
+    '#default_value' => property_exists($gdpr_cookies_service, 'name') ?  $gdpr_cookies_service->getName() : '',
+  ];
+
+
 
   $form['vanisher'] = array(
     '#type' => 'select',
     '#title' => 'Vanisher',
     '#description' => t('Choose the vanisher for the service control.'),
-    '#default_value' => property_exists($third_party_service, 'vanisher') ?  $third_party_service->getVanisher() : '',
-    '#options' => $vanisher->getInstalledVanisherNames() ?: array(), // todo lars
+    '#default_value' => property_exists($gdpr_cookies_service, 'vanisher') ?  $gdpr_cookies_service->getVanisher() : '',
+    '#options' => $vanisher->getInstalledVanisherNames() ?: [], // todo lars
+
     '#empty_value' => '',
     '#required' => TRUE,
   );
@@ -239,8 +242,9 @@ function third_party_service_form($form, &$form_state, $entity) {
     '#type' => 'checkbox',
     '#title' => t('Enable Service Control?'),
     '#description' => t('If activated this service will be controlled with tarteaucitron.'),
-    '#default_value' => property_exists($third_party_service, 'enabled') ?  $third_party_service->isEnabled() : FALSE,
-  );
+    '#default_value' => property_exists($gdpr_cookies_service, 'enabled') ?  $gdpr_cookies_service->isEnabled() : FALSE,
+  ];
+
 
   $form['optional_fields'] = array(
     '#type' => 'fieldset',
@@ -253,7 +257,7 @@ function third_party_service_form($form, &$form_state, $entity) {
     '#type' => 'textarea',
     '#title' => t('Info Content'),
     '#description' => t('This content will be displayed instead until the user activates the service.'),
-    '#default_value' => property_exists($third_party_service, 'info') ?  $third_party_service->getInfo() : '',
+    '#default_value' => property_exists($gdpr_cookies_service, 'info') ?  $gdpr_cookies_service->getInfo() : '',
     '#required' => FALSE,
   );
 
@@ -266,35 +270,35 @@ function third_party_service_form($form, &$form_state, $entity) {
   return $form;
 }
 
-function third_party_service_form_delete_confirm($form, &$form_state, $entity) {
+function gdpr_cookies_service_form_delete_confirm($form, &$form_state, $entity) {
 
-  $form['_third_party_service'] = array(
+  $form['_gdpr_cookies_service'] = array(
     '#type' => 'value',
     '#value' => $entity,
   );
 
   return confirm_form($form, t('Are you sure you want to delete ' . $entity->getName() . ' ?'),
-    isset($_GET['destination']) ? $_GET['destination'] : "admin/config/system/gdpr-cookies/third-party-service", t('This action cannot be undone.'), t('Delete'), t('Cancel'));
+    isset($_GET['destination']) ? $_GET['destination'] : "admin/config/system/gdpr-cookies/gdpr-cookies-service", t('This action cannot be undone.'), t('Delete'), t('Cancel'));
 
 }
 
 
-function third_party_service_form_delete_confirm_submit($form, &$form_state) {
+function gdpr_cookies_service_form_delete_confirm_submit($form, &$form_state) {
   if ($form_state['values']['confirm']) {
-    $entity = $form_state['values']['_third_party_service'];
+    $entity = $form_state['values']['_gdpr_cookies_service'];
     backdrop_set_message(t('Third Party Service ' . $entity->getName() . ' will get deleted.'));
-    third_party_service_delete(array($entity->id));
+    gdpr_cookies_service_delete(array($entity->id));
     backdrop_set_message(t('Third Party Service has been deleted successfully.'));
   }
-  $form_state['redirect'] = 'admin/config/system/gdpr-cookies/third-party-service';
+  $form_state['redirect'] = 'admin/config/system/gdpr-cookies/gdpr-cookies-service';
 }
 
 
 /**
  * Use the controller to delete the entity.
  */
-function third_party_service_delete($entity) {
-  entity_get_controller('third_party_service')->delete($entity);
+function gdpr_cookies_service_delete($entity) {
+  entity_get_controller('gdpr_cookies_service')->delete($entity);
 }
 
 
@@ -304,15 +308,15 @@ function third_party_service_delete($entity) {
  * We pass things straight through to the Field API to handle validation
  * of the attached fields.
  */
-function third_party_service_form_validate($form, &$form_state) {
-  field_attach_form_validate('third_party_service', $form_state['values']['basic_entity'], $form, $form_state);
+function gdpr_cookies_service_form_validate($form, &$form_state) {
+  field_attach_form_validate('gdpr_cookies_service', $form_state['values']['basic_entity'], $form, $form_state);
 }
 
 
 /**
  * Form submit handler: Submits basic_add_form information.
  */
-function third_party_service_form_submit($form, &$form_state) {
+function gdpr_cookies_service_form_submit($form, &$form_state) {
   $entity = $form_state['values']['basic_entity'];
 
   $entity->name = $form_state['values']['name'];
@@ -322,7 +326,7 @@ function third_party_service_form_submit($form, &$form_state) {
   $entity->info = $form_state['values']['info'];
 
 
-  $id = third_party_service_save($entity);
+  $id = gdpr_cookies_service_save($entity);
 
 
   if ($id) {
@@ -336,21 +340,21 @@ function third_party_service_form_submit($form, &$form_state) {
     )));
   }
 
-  $form_state['redirect'] = 'admin/config/system/gdpr-cookies/third-party-service';
+  $form_state['redirect'] = 'admin/config/system/gdpr-cookies/gdpr-cookies-service';
 }
 
 /**
  * We save the entity by calling the controller.
  */
-function third_party_service_save(&$entity) {
-  return entity_get_controller('third_party_service')->save($entity);
+function gdpr_cookies_service_save(&$entity) {
+  return entity_get_controller('gdpr_cookies_service')->save($entity);
 }
 
 /**
  * Basic information for the page.
  */
-function third_party_service_info_page() {
-  $content['table'] = third_party_service_list_entities();
+function gdpr_cookies_service_info_page() {
+  $content['table'] = gdpr_cookies_service_list_entities();
   return $content;
 }
 
@@ -365,7 +369,7 @@ function third_party_service_info_page() {
  *
  * @see pager_example.module
  */
-function third_party_service_list_entities() {
+function gdpr_cookies_service_list_entities() {
 
 
   $content = array();
@@ -373,12 +377,12 @@ function third_party_service_list_entities() {
 
   $content['add_button'] = array(
     '#type' => 'markup',
-    '#markup' => '<a href="/admin/config/system/gdpr-cookies/third-party-service/add">' . t('+ Add third party service') . '</a>',
+    '#markup' => '<a href="/admin/config/system/gdpr-cookies/gdpr-cookies-service/add">' . t('+ Add third party service') . '</a>',
   );
 
 
   // Load all of our entities.
-  $entities = third_party_service_load_multiple();
+  $entities = gdpr_cookies_service_load_multiple();
   if (!empty($entities)) {
     foreach ($entities as $entity) {
       // Create tabular rows for our entities.
@@ -387,8 +391,8 @@ function third_party_service_list_entities() {
           'name' => $entity->getName(),
           'vanisher' => $entity->getVanisher(),
           'enabled' => $entity->isEnabled() ? t('Enabled') : t('Disabled'),
-          'edit' => "<a href='/admin/config/system/gdpr-cookies/third-party-service/" . $entity->getName() . "'>" . t('Edit') . "</a>",
-          'delete' => "<a href='/admin/config/system/gdpr-cookies/third-party-service/" . $entity->getName() . "/delete'>" . t('Delete') . "</a>",
+          'edit' => "<a href='/admin/config/system/gdpr-cookies/gdpr-cookies-service/" . $entity->getName() . "'>" . t('Edit') . "</a>",
+          'delete' => "<a href='/admin/config/system/gdpr-cookies/gdpr-cookies-service/" . $entity->getName() . "/delete'>" . t('Delete') . "</a>",
         )
       );
     }
@@ -410,7 +414,7 @@ function third_party_service_list_entities() {
     // There were no entities. Tell the user.
     $content[] = array(
       '#type' => 'item',
-      '#markup' => t('No third_party_service entities currently exist.'),
+      '#markup' => t('No gdpr_cookies_service entities currently exist.'),
     );
   }
   return $content;
@@ -423,12 +427,12 @@ function third_party_service_list_entities() {
  * We only need to pass this request along to entity_load(), which
  * will in turn call the load() method of our entity controller class.
  */
-function third_party_service_load_multiple($basic_ids = FALSE, $conditions = array(), $reset = FALSE) {
-  return entity_load('third_party_service', $basic_ids, $conditions, $reset);
+function gdpr_cookies_service_load_multiple($basic_ids = FALSE, $conditions = array(), $reset = FALSE) {
+  return entity_load('gdpr_cookies_service', $basic_ids, $conditions, $reset);
 }
 
-function third_party_service_load($id, $reset = FALSE) {
-  $ret = third_party_service_load_multiple(array($id), array(), $reset);
+function gdpr_cookies_service_load($id, $reset = FALSE) {
+  $ret = gdpr_cookies_service_load_multiple(array($id), array(), $reset);
   return $ret ? reset($ret) : FALSE;
 }
 
@@ -531,12 +535,12 @@ function gdpr_cookies_settings_page_submit($form, &$form_state) {
  */
 function gdpr_cookies_entity_info() {
   return array(
-    'third_party_service' => array(
+    'gdpr_cookies_service' => array(
       'label' => t('Third Party Service Entity'),
       'plural label' => t('Third Party Service Entities'),
       'entity class' => 'ThirdPartyServiceEntity',
       'controller class' => 'EntityPlusControllerExportable',
-      'base table' => 'third_party_service',
+      'base table' => 'gdpr_cookies_service',
       'entity keys' => array(
         'id' => 'id',
         "label" => "label",
@@ -556,7 +560,7 @@ function gdpr_cookies_entity_info() {
   );
 }
 
-function gdpr_cookies_default_third_party_service() {
+function gdpr_cookies_default_gdpr_cookies_service() {
   return array();
 }
 

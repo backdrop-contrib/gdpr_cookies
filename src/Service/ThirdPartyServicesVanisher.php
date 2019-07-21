@@ -38,15 +38,15 @@ class ThirdPartyServicesVanisher {
 
     $services = array();
     $query = new \EntityFieldQuery();
-    $query->entityCondition('entity_type', 'third_party_service')
+    $query->entityCondition('entity_type', 'gdpr_cookies_service')
       ->propertyCondition('enabled', true);
 
     $result = $query->execute();
 
 
-    if (isset($result['third_party_service'])) {
-      $news_items_nids = array_keys($result['third_party_service']);
-      $services = entity_load('third_party_service', $news_items_nids);
+    if (isset($result['gdpr_cookies_service'])) {
+      $news_items_nids = array_keys($result['gdpr_cookies_service']);
+      $services = entity_load('gdpr_cookies_service', $news_items_nids);
     }
 
 
