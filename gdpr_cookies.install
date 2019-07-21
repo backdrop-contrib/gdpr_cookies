@@ -9,8 +9,8 @@
  * Implements hook_schema().
  */
 function gdpr_cookies_schema() {
-  $schema['gdpr_cookies_services'] = array(
-    'description' => 'Stores information about all defined entity_test types.',
+  $schema['gdpr_cookies_service'] = array(
+    'description' => 'Stores information about all defined third-party service types.',
     'fields' => array(
       'id' => array(
         'type' => 'serial',
@@ -90,14 +90,14 @@ function gdpr_cookies_update_1001() {
 
   $spec = array();
 
-  db_rename_table('third_party_service', 'gdpr_cookies_services');
+  db_rename_table('third_party_service', 'gdpr_cookies_service');
 
   $spec = array(
     'type' => 'serial',
     'not null' => TRUE,
     'description' => 'Primary Key: Unique ID.',
   );
-  db_change_field('gdpr_cookies_services', 'id', 'id', $spec);
+  db_change_field('gdpr_cookies_service', 'id', 'id', $spec);
 
   $spec = array(
     'description' => 'The name of the third-party service.',
@@ -106,7 +106,7 @@ function gdpr_cookies_update_1001() {
     'not null' => TRUE,
     'default'  => '',
   );
-  db_change_field('gdpr_cookies_services', 'name', 'name', $spec);
+  db_change_field('gdpr_cookies_service', 'name', 'name', $spec);
 
   $spec = array(
     'description' => 'The info content of the third-party service.',
@@ -115,7 +115,7 @@ function gdpr_cookies_update_1001() {
     'not null' => TRUE,
     'default' => '',
   );
-  db_change_field('gdpr_cookies_services', 'info', 'info', $spec);
+  db_change_field('gdpr_cookies_service', 'info', 'info', $spec);
 
   $spec = array(
     'description' => 'The human-readable name of the third-party service.',
@@ -124,7 +124,7 @@ function gdpr_cookies_update_1001() {
     'not null' => TRUE,
     'default' => '',
   );
-  db_change_field('gdpr_cookies_services', 'label', 'label', $spec);
+  db_change_field('gdpr_cookies_service', 'label', 'label', $spec);
 
   $spec = array(
     'description' => 'The name of the relevant vanisher.',
@@ -133,7 +133,7 @@ function gdpr_cookies_update_1001() {
     'not null' => TRUE,
     'default' => '',
   );
-  db_change_field('gdpr_cookies_services', 'vanisher', 'vanisher', $spec);
+  db_change_field('gdpr_cookies_service', 'vanisher', 'vanisher', $spec);
 
   $spec = array(
     'type' => 'int',
@@ -144,7 +144,7 @@ function gdpr_cookies_update_1001() {
     'size' => 'tiny',
     'description' => 'The exportable status of the vanisher.',
   );
-  db_change_field('gdpr_cookies_services', 'status', 'status', $spec);
+  db_change_field('gdpr_cookies_service', 'status', 'status', $spec);
 
   $spec = array(
     'description' => 'The name of the providing module if the vanisher has been defined in code.',
@@ -152,5 +152,5 @@ function gdpr_cookies_update_1001() {
     'length' => 255,
     'not null' => FALSE,
   );
-  db_change_field('gdpr_cookies_services', 'module', 'module', $spec);
+  db_change_field('gdpr_cookies_service', 'module', 'module', $spec);
 }
