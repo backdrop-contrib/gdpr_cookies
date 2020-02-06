@@ -1,65 +1,76 @@
 /*global tarteaucitron */
 tarteaucitron.lang = {
-  "adblock": "Bitte deaktivieren Sie Ihren Adblocker! Mit einem aktiviertem Adblocker ist es nicht möglich die Datenschutzeinstellungen für diese Website zu personalisieren.",
-  "adblock_call": "Bitte deaktivieren Sie Ihren Adblocker!",
-  "reload": "Bitte laden Sie die Seite neu.",
+    "middleBarHead": "☝ 🍪",
+    "adblock": "Hallo! Diese Seite ist transparent und lässt Ihnen die Wahl der externen Services, die aktiviert werden dürfen.",
+    "adblock_call": "Bitte deaktivieren Sie Ihren 'Werbeblocker' um Cookie-Einstellungen vornehmen zu können.",
+    "reload": "Seite neu laden",
+    
+    "alertBigScroll": "Durch weiterblättern,",
+    "alertBigClick": "Wenn Sie diese Webseite benutzen,",
+    "alertBig": "stimmen Sie der Benutzung von externen Diensten zu",
+    
+    "alertBigPrivacy": "Diese Webseite verwendet 'Cookies' um Inhalte und Anzeigen zu personalisieren und zu analysieren. Bestimmen Sie, welche Dienste benutzt werden dürfen",
+    "alertSmall": "Datenschutz-Einstellungen",
+    "personalize": "Personalisieren",
+    "acceptAll": "Alle akzeptieren",
+    "close": "Schließen",
 
-  "alertBigScroll": "Achtung! Wenn Sie diese Website benutzen, zum Beispiel durch scrollen, akzeptieren Sie die Verwendung von 'Cookies' durch externe Dienstleister. Verwenden Sie die Datenschutzeinstellungen, um Ihre Einstellungen zu personalisieren.",
-  "alertBigClick": "Wenn Sie diese Website benutzen,",
-  "alertBig": "stimmen Sie der Benutzung externer Dienste zu.",
+    "privacyUrl": "Datenschutzbestimmungen",
+    
+    "all": "Einstellungen für alle Dienste",
 
-  "alertBigPrivacy": "Diese Website verwendet 'Cookies'. In den Datenschutzeinstellungen können Sie bestimmen, welche Dienste verwendet/nicht verwendet werden dürfen.",
-  "alertSmall": "Datenschutzeinstellungen",
-  "personalize": "Personalisieren",
-  "acceptAll": "OK, akzeptiere alles",
-  "close": "Beenden",
+    "info": "Schutz der Privatsphäre",
+    "disclaimer": "Wenn Sie diese Dienste nutzen, erlauben Sie deren 'Cookies' und Tracking-Funktionen, die zu ihrer ordnungsgemäßen Funktion notwendig sind.",
+    "allow": "Erlauben",
+    "deny": "Ablehnen",
+    "noCookie": "Dieser Dienst nutzt keine 'Cookies'.",
+    "useCookie": "Dieser Dienst kann 'Cookies' verwenden",
+    "useCookieCurrent": "Dieser Dienst verwendet",
+    "useNoCookie": "Dieser Dienst hat keine 'Cookies' installiert.",
+    "more": "Weiter lesen",
+    "source": "Zur offiziellen Webseite",
+    "credit": "Cookie Manager von tarteaucitron.js",
 
-  "all": "Datenschutzeinstellungen",
+    "toggleInfoBox": "Zeige/Verberge Cookie-Einstellungen",
+    "title": "Cookie-Einstellungen",
+    "cookieDetail": "Cookie Details für",
+    "ourSite": "auf unserer Seite",
+    "newWindow": "(neues Fenster)",
+    "allowAll": "Erlaube alle Cookies",
+    "denyAll": "Verbiete alle Cookies",
+    
+    "fallback": "ist deaktiviert.",
 
-  "info": "Schutz der Privatsphäre",
-  "disclaimer": "Wenn Sie diese Dienste nutzen (Opt-In) stimmen Sie zu, dass die für diese Dienste erforderlichen 'Cookies' und/oder Tracking-Funktionen gespeichert/verwendet werden.",
-  "allow": "Erlauben",
-  "deny": "Ablehnen",
-  "noCookie": "Dieser Dienst verwendet keine 'Cookies'.",
-  "useCookie": "Dieser Dienst beinhaltet",
-  "useCookieCurrent": "Dieser Dienst hat 'Cookies' installiert: ",
-  "useNoCookie": "Dieser Dienst hat keine 'Cookies' installiert.",
-  "more": "Weiter lesen",
-  "source": "Zur offiziellen Website",
-  "credit": "Cookies-Manager von tarteaucitron.js",
-
-  "fallback": "ist deaktiviert.",
-
-  "ads": {
-    "title": "Netzwerke für Werbeanzeigen",
-    "details": "Netzwerke für Werbeanzeigen können mit dem Verkauf von Werbeplatzierungen auf dieser Website Einnahmen erzielen."
-  },
-  "analytic": {
-    "title": "Besucher Zähldienste",
-    "details": "Die verwendeten Besucherzähldienste generieren Statistiken, die dabei helfen diese Website zu verbessern."
-  },
-  "social": {
-    "title": "Soziale Netzwerke",
-    "details": "Soziale Netzwerke können die Benutzbarkeit der Website verbessern und ihren Bekanntheitsgrad erhöhen."
-  },
-  "video": {
-    "title": "Video Plattformen",
-    "details": "Video Plattformen ermöglichen externe Videoinhalte einzublenden und die Sichtbarkeit der Website zu erhöhen."
-  },
-  "comment": {
-    "title": "Kommentarverwaltung",
-    "details": "Kommentarverwaltungen erleichtern die Organisation von Kommentaren und helfen dabei Spam zu verhindern."
-  },
-  "support": {
-    "title": "Support",
-    "details": "Supportdienste erlauben es, die Urheber dieser Website zu kontaktieren und helfen dabei die Website zu verbessern."
-  },
-  "api": {
-    "title": "APIs",
-    "details": "APIs sind Programmteile, die internen Programmen die Anbindung an externe Dienste oder Daten ermöglichen. Sie verbessern und erweitern die Funktionalitäten der Website."
-  },
-  "other": {
-    "title": "Andere",
-    "details": "Dienste zum Anzeigen weiterer Webinhalte von externen Anbietern."
-  }
+    "ads": {
+        "title": "Werbenetzwerke",
+        "details": "Werbenetzwerke können mit dem Verkauf von Werbeplatzierungen auf der Seite Einnahmen erhalten."
+    },
+    "analytic": {
+        "title": "Besucher Zähldienste",
+        "details": "Die verwendeten Besucher Zähldienste generieren Statistiken die dabei helfen, die Seite zu verbessern."
+    },
+    "social": {
+        "title": "Soziale Netzwerke",
+        "details": "Soziale Netzwerke können die Benutzbarkeit der Seite verbessern und ihren Bekanntheitsgrad erhöhen."
+    },
+    "video": {
+        "title": "Videos",
+        "details": "Videoplattformen erlauben Videoinhalte einzublenden und die Sichtbarkeit der Seite zu erhöhen."
+    },
+    "comment": {
+        "title": "Kommentare",
+        "details": "Kommentar Manager erleichtern die Organisation von Kommentaren und helfen dabei Spam zu verhindern."
+    },
+    "support": {
+        "title": "Support",
+        "details": "Support Dienste erlauben es die Urheber der Seite zu kontaktieren und sie zu verbessern."
+    },
+    "api": {
+        "title": "APIs",
+        "details": "APIs werden benutzt um Skripte zu laden, wie: Geolokalisierung, Suchmaschinen, Übersetzungen, ..."
+    },
+    "other": {
+        "title": "Andere",
+        "details": "Dienste zum Anzeigen von Web-Inhalten."
+    }
 };
