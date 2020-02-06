@@ -497,6 +497,8 @@ div#tarteaucitronServices {
     width: 100%;
 }
 
+#tarteaucitronAlertBig #tarteaucitronPrivacyUrl,
+#tarteaucitronAlertBig #tarteaucitronPrivacyUrlDialog,
 #tarteaucitronAlertBig #tarteaucitronDisclaimerAlert,
 #tarteaucitronAlertBig #tarteaucitronDisclaimerAlert strong {
     font: 15px verdana;
@@ -507,11 +509,12 @@ div#tarteaucitronServices {
     font-weight: 700;
 }
 
-#tarteaucitronAlertBig #tarteaucitronPrivacyUrl {
+#tarteaucitronAlertBig #tarteaucitronPrivacyUrl,
+#tarteaucitronAlertBig #tarteaucitronPrivacyUrlDialog {
     cursor: pointer;
 }
 
-#tarteaucitronAlertBig #tarteaucitronCloseAlert, #tarteaucitronAlertBig #tarteaucitronPersonalize, #tarteaucitron #tarteaucitronPrivacyUrl {
+#tarteaucitronAlertBig #tarteaucitronCloseAlert, #tarteaucitronAlertBig #tarteaucitronPersonalize, #tarteaucitron #tarteaucitronPrivacyUrl, #tarteaucitron #tarteaucitronPrivacyUrlDialog {
     background: #008300;
     color: #fff;
     cursor: pointer;
@@ -522,7 +525,7 @@ div#tarteaucitronServices {
     margin-left: 7px;
 }
 
-#tarteaucitronAlertBig #tarteaucitronCloseAlert, #tarteaucitron #tarteaucitronPrivacyUrl {
+#tarteaucitronAlertBig #tarteaucitronCloseAlert, #tarteaucitron #tarteaucitronPrivacyUrl, #tarteaucitron #tarteaucitronPrivacyUrlDialog {
     background: #fff;
     color: #333;
     font-size: 13px;
@@ -742,7 +745,7 @@ div.amazon_product {
 
 div#tarteaucitronInfo {
     display: block!important;
-    position: relative;
+    position: relative !important;
     text-align: center!important;
     max-width: 80%!important;
     padding: 15px 0!important;
@@ -769,4 +772,3 @@ a.tarteaucitronSelfLink {
 span.tarteaucitronTitle.tarteaucitronH3 {
     margin-top: 12px!important;
 }
-
