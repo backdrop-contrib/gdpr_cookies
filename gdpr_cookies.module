@@ -36,7 +36,8 @@ function gdpr_cookies_exit() {
   // after all.
   // Make sure to exclude image style images (is this even required anymore??).
   // Make sure the buffer has a length.
-  if (stripos(backdrop_get_http_header('content-type'), 'text/html') !== FALSE && !is_file($current_path) && ob_get_length()) {
+  $http_header = backdrop_get_http_header('content-type');
+  if (isset($http_header) && stripos($http_header, 'text/html') !== FALSE && !is_file($current_path) && ob_get_length()) {
 
     // Catch the output buffer. Converted from ob_get_clean().
     $page = ob_get_contents();
