@@ -1,4 +1,5 @@
 /*global tarteaucitron */
+/* min ready */
 tarteaucitron.lang = {
     "middleBarHead": "☝ 🍪",
     "adblock": "Привет! Этот сайт совершенно открытый и позволяет вам выбрать сервисы третьих лиц, которым вы хотите дать доступ.",
@@ -14,6 +15,7 @@ tarteaucitron.lang = {
     "personalize": "Персонализировать",
     "acceptAll": "Ок, все активировать",
     "close": "Закрыть",
+    "closeBanner": "Скрыть баннер cookie",
 
     "privacyUrl": "Политика конфиденциальности",
     
@@ -30,16 +32,23 @@ tarteaucitron.lang = {
     "more": "Подробнее",
     "source": "Посетите официальный сайт",
     "credit": "Кукис манаджер tarteaucitron.js",
+    "noServices": "Этот веб-сайт не использует файлы cookie, требующие вашего согласия.",
 
     "toggleInfoBox": "Show/hide informations about cookie storage",
     "title": "Панель управления cookies",
-    "cookieDetail": "Cookie detail for",
-    "ourSite": "on our site",
-    "newWindow": "(new window)",
+    "cookieDetail": "Информация о файлах cookie для",
+    "ourSite": "на нашем сайте",
+    "modalWindow": "(модальное окно)",
+    "newWindow": "(новое окно)",
     "allowAll": "Разрешить использование cookies",
     "denyAll": "Запретить использование cookies",
+
+    "icon": "Cookies",
+    
     
     "fallback": "Деактивирован.",
+    "allowed": "разрешается",
+    "disallowed": "запрещено",
 
     "ads": {
         "title": "Рекламная сеть",
@@ -73,7 +82,15 @@ tarteaucitron.lang = {
         "title": "Другие",
         "details": "Службы для отображения веб-контента."
     },
-    
-    "mandatoryTitle": "Mandatory cookies",
-    "mandatoryText": "This site uses cookies necessary for its proper functioning which cannot be deactivated."
+
+    "google": {
+        "title": "Специфическое согласие на услуги Google",
+        "details": "Google может использовать ваши данные для измерения аудитории, оценки рекламной эффективности или предоставления вам персонализированных рекламных объявлений."
+    },
+
+    "mandatoryTitle": "Обязательные файлы cookie",
+    "mandatoryText": "Этот сайт использует файлы cookie, необходимые для его правильной работы, которые нельзя отключить.",
+
+    "save": "Сохранить",
+    "ourpartners": "Наши партнеры"
 };
