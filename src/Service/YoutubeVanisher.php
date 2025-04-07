@@ -1,6 +1,7 @@
 <?php
 
 namespace Backdrop\gdpr_cookies\Service;
+use Backdrop\gdpr_cookies\Entity\ThirdPartyServiceEntityInterface;
 
 /**
  * Class YoutubeVanisher.
@@ -15,6 +16,38 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
    * @see https://stackoverflow.com/a/9102270/2779907
    */
   const YOUTUBE_VIDEO_ID_REGEX = '~^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*~i';
+
+
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getReplacementMarkup(array $data, ThirdPartyServiceEntityInterface $entity) {
+    if ($data['width'] == "100%") {
+      $data['width'] = "";
+      $data['height'] = "";
+      $markup = '<div class="youtube_player" videoID="' . $data['video_id'] . '" ';
+      $markup .= 'style="aspect-ratio:16/9;width:100%"></div>';
+      $markup .= $entity->getInfo();
+      return $markup;
+    }
+
+    return str_replace(
+      [
+        '@video_id',
+        '@width',
+        '@height',
+        '@info_text',
+      ],
+      [
+        $data['video_id'],
+        $data['width'],
+        $data['height'],
+        $entity->getInfo(),
+      ],
+      $this->getReplacementMarkupTemplate()
+    );
+  }
 
   /**
    * {@inheritdoc}

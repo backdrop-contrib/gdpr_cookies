@@ -6,6 +6,9 @@
 }
 
 /* Do not display over admin bar. */
-html.admin-bar #tarteaucitronAlertBig {
-    display: none !important;
+html.admin-bar #tarteaucitronRoot #tarteaucitronAlertBig.tarteaucitronAlertBigTop {
+    /* Place vertically below the Admin bar. */
+    top: var(--admin-bar-height);
+    /* Ensure the admin bar drop-down menu is not covered by it. */
+    z-index: 990;
 }

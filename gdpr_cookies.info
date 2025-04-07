@@ -8,7 +8,3 @@ maintainers[yorkshire-pudding] = Martin Price
 package = Privacy
 dependencies[] = entity_plus
 configure = admin/config/system/gdpr-cookies/settings
-scripts[] = js/tarteaucitron/tarteaucitron.js
-scripts[] = js/tarteaucitron/tarteaucitron.services.js
-scripts[] = js/extended_services.js
-scripts[] = js/init_tarteaucitron.js
