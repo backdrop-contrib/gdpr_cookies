@@ -2,6 +2,9 @@ name = GDPR Cookies
 description = Control cookies from all sources with tarteaucitron.js
 backdrop = 1.x
 type = module
+
+maintainers[yorkshire-pudding] = Martin Price
+
 package = Privacy
 dependencies[] = entity_plus
 configure = admin/config/system/gdpr-cookies/settings
