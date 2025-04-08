@@ -606,3 +606,23 @@ function gdpr_cookies_autoload_info() {
     'ThirdPartyServiceEntity' => 'src/Entity/ThirdPartyServiceEntity.php',
   );
 }
+
+/**
+ * Implements hook_filter_info_alter().
+ */
+function gdpr_cookies_filter_info_alter(&$info) {
+  if (isset($info['filter_html'])) {
+    $info['filter_html']['process callback'] = 'gdpr_cookies_filter_process';
+  }
+}
+
+/**
+ * Callback for removing `srcdoc` attributes.
+ */
+function gdpr_cookies_filter_process($text, $filter, $format, $langcode, $cache, $cache_id) {
+  // Remove the whole srcdoc attribute.
+  $pattern = '/<([^>]*)\s+srcdoc\s*=\s*(["\'])[^"\']*\2([^>]*)>/i';
+  $replacement = '<$1 $3>';
+  $text = preg_replace($pattern, $replacement, $text);
+  return $text;
+}
