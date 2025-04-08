@@ -89,7 +89,7 @@ function gdpr_cookies_module_implements_alter(&$implementations, $hook) {
 function gdpr_cookies_library_info() {
   $libraries['tarteaucitron'] = array(
     'title' => 'Tarte au Citron',
-    'version' => '1.20.1',
+    'version' => '1.20.2',
     'website' => 'https://tarteaucitron.io/',
     'js' => array(
       backdrop_get_path('module', 'gdpr_cookies') . '/js/tarteaucitron/tarteaucitron.js' => array(
