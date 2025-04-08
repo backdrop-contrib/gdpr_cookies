@@ -617,12 +617,35 @@ function gdpr_cookies_filter_info_alter(&$info) {
 }
 
 /**
- * Callback for removing `srcdoc` attributes.
+ * Removes srcdoc attributes from HTML content using the DOM extension.
+ *
+ * @param string $html
+ *   The HTML content to process.
+ *
+ * @return string
+ *   The processed HTML with srcdoc attributes removed.
  */
-function gdpr_cookies_filter_process($text, $filter, $format, $langcode, $cache, $cache_id) {
-  // Remove the whole srcdoc attribute.
-  $pattern = '/<([^>]*)\s+srcdoc\s*=\s*(["\'])[^"\']*\2([^>]*)>/i';
-  $replacement = '<$1 $3>';
-  $text = preg_replace($pattern, $replacement, $text);
-  return $text;
+function gdpr_cookies_filter_process($html) {
+  // Create a new DOM document.
+  $dom = new DOMDocument();
+  $dom->preserveWhiteSpace = TRUE;
+
+  // Set the proper encoding.
+  $html = '<?xml encoding="UTF-8">' . $html;
+  // Prevent adding DOCTYPE and HTML/BODY tags.
+  $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+  // Use XPath to find all elements with srcdoc attribute.
+  $xpath = new DOMXPath($dom);
+  $elements = $xpath->query('//*[@srcdoc]');
+
+  // Remove the srcdoc attribute from all matching elements.
+  foreach ($elements as $element) {
+    $element->removeAttribute('srcdoc');
+  }
+
+  $clean_html = $dom->saveHTML();
+  $clean_html = str_replace('<?xml encoding="UTF-8">', '', $clean_html);
+
+  return $clean_html;
 }
