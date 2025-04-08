@@ -1,12 +1,8 @@
 <?php
 require_once('src/Entity/ThirdPartyServiceEntityInterface.php');
 
-function gdpr_cookies_preprocess_page(&$variables) {
-  backdrop_add_library('gdpr_cookies', 'tarteaucitron', TRUE);
-}
-
 /**
- * Implements hook_page_attachments().
+ * Implements hook_init().
  */
 function gdpr_cookies_init() {
 
@@ -94,25 +90,26 @@ function gdpr_cookies_library_info() {
   $libraries['tarteaucitron'] = array(
     'title' => 'Tarte au Citron',
     'version' => '1.20.1',
+    'website' => 'https://tarteaucitron.io/',
     'js' => array(
       backdrop_get_path('module', 'gdpr_cookies') . '/js/tarteaucitron/tarteaucitron.js' => array(
         'type' => 'file',
-        'scope' => 'header',
+        'scope' => 'footer',
         'weight' => -4,
       ),
       backdrop_get_path('module', 'gdpr_cookies') . '/js/init_tarteaucitron.js' => array(
         'type' => 'file',
-        'scope' => 'header',
+        'scope' => 'footer',
         'weight' => -3,
       ),
       backdrop_get_path('module', 'gdpr_cookies') . '/js/tarteaucitron/tarteaucitron.services.js' => array(
         'type' => 'file',
-        'scope' => 'header',
+        'scope' => 'footer',
         'weight' => -2,
       ),
       backdrop_get_path('module', 'gdpr_cookies') . '/js/extended_services.js' => array(
         'type' => 'file',
-        'scope' => 'header',
+        'scope' => 'footer',
         'weight' => -1,
       ),
     ),

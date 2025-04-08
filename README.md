@@ -100,7 +100,7 @@ Credits <!-- This section is required. -->
 - Maintainer of Blizz Vanisher for Drupal: Lars Rosenberg (rackberg).
 - Maintainer of Blizz Vanisher for Drupal: Christian Lamine (CHiLi.HH).
 - Maintainer of Blizz Vanisher for Drupal: marvin_B8.
-- [GDPR friendly cookie manager library](https://github.com/AmauriC/tarteaucitron.js)
+- [Tarte au Citron - a GDPR friendly cookie conset manager library](https://tarteaucitron.io/)
 - Video: [The GDPR is here](https://www.youtube.com/watch?v=CyIFNsSHPxQ)
 
 
@@ -110,7 +110,4 @@ License <!-- This section is required. -->
 This project is GPL v2 software.
 See the LICENSE.txt file in this directory for complete text.
 
-The `tarteaucitron.js` script is released under the MIT license.
-
-
-
+The `tarteaucitron.js` library is released under the MIT license.
