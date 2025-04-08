@@ -453,6 +453,7 @@ var tarteaucitron = {
                     analytics_storage: 'granted'
                 });
             });
+    
             document.addEventListener('multiplegtag_allowed', function() {
                 window.tac_gtag('consent', 'update', {
                     analytics_storage: 'granted'
