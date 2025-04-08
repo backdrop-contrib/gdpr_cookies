@@ -89,7 +89,7 @@ function gdpr_cookies_module_implements_alter(&$implementations, $hook) {
 function gdpr_cookies_library_info() {
   $libraries['tarteaucitron'] = array(
     'title' => 'Tarte au Citron',
-    'version' => '1.20.1',
+    'version' => '1.20.2',
     'website' => 'https://tarteaucitron.io/',
     'js' => array(
       backdrop_get_path('module', 'gdpr_cookies') . '/js/tarteaucitron/tarteaucitron.js' => array(
@@ -605,4 +605,47 @@ function gdpr_cookies_autoload_info() {
     'CookiesFactory' => 'src/Service/CookiesFactory.php',
     'ThirdPartyServiceEntity' => 'src/Entity/ThirdPartyServiceEntity.php',
   );
+}
+
+/**
+ * Implements hook_filter_info_alter().
+ */
+function gdpr_cookies_filter_info_alter(&$info) {
+  if (isset($info['filter_html'])) {
+    $info['filter_html']['process callback'] = 'gdpr_cookies_filter_process';
+  }
+}
+
+/**
+ * Removes srcdoc attributes from HTML content using the DOM extension.
+ *
+ * @param string $html
+ *   The HTML content to process.
+ *
+ * @return string
+ *   The processed HTML with srcdoc attributes removed.
+ */
+function gdpr_cookies_filter_process($html) {
+  // Create a new DOM document.
+  $dom = new DOMDocument();
+  $dom->preserveWhiteSpace = TRUE;
+
+  // Set the proper encoding.
+  $html = '<?xml encoding="UTF-8">' . $html;
+  // Prevent adding DOCTYPE and HTML/BODY tags.
+  $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+  // Use XPath to find all elements with srcdoc attribute.
+  $xpath = new DOMXPath($dom);
+  $elements = $xpath->query('//*[@srcdoc]');
+
+  // Remove the srcdoc attribute from all matching elements.
+  foreach ($elements as $element) {
+    $element->removeAttribute('srcdoc');
+  }
+
+  $clean_html = $dom->saveHTML();
+  $clean_html = str_replace('<?xml encoding="UTF-8">', '', $clean_html);
+
+  return $clean_html;
 }
