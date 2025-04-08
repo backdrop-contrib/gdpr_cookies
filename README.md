@@ -100,7 +100,7 @@ Credits <!-- This section is required. -->
 - Maintainer of Blizz Vanisher for Drupal: Lars Rosenberg (rackberg).
 - Maintainer of Blizz Vanisher for Drupal: Christian Lamine (CHiLi.HH).
 - Maintainer of Blizz Vanisher for Drupal: marvin_B8.
-- [Tarte au Citron - a GDPR friendly cookie conset manager library](https://tarteaucitron.io/)
+- [Tarte au Citron - a GDPR friendly cookie consent manager library](https://tarteaucitron.io/)
 - Video: [The GDPR is here](https://www.youtube.com/watch?v=CyIFNsSHPxQ)
 
 
