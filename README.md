@@ -90,13 +90,14 @@ Bugs and feature requests should be reported in [the Issue Queue](https://github
 Current Maintainers <!-- This section is required. -->
 -------------------
 
-- [Martin Price](https://github.com/yorkshire-pudding) - [System Horizons Ltd](https://www.systemhorizons.co.uk)
+- [Martin Price](https://github.com/yorkshire-pudding)
 - Collaboration and co-maintainers welcome!
 
 
 Credits <!-- This section is required. -->
 -------
 
+- Supporting organization: [System Horizons Ltd](https://www.systemhorizons.co.uk)
 - Ported to Backdrop CMS by [Graham Oliver](https://github.com/Graham-72).
 - Maintainer of Blizz Vanisher for Drupal: Lars Rosenberg (rackberg).
 - Maintainer of Blizz Vanisher for Drupal: Christian Lamine (CHiLi.HH).
