@@ -1,11 +1,17 @@
 <?php
 
+/**
+ * Loads all the 'Vanishers'.
+ */
 class CookiesFactory {
 
   static public $thirdpartyservices;
 
+  /**
+   * Create a vanisher object.
+   */
   public function createThirdPartyServicesVanisher() {
-    if (CookiesFactory::$thirdpartyservices == NULL) {
+    if (self::$thirdpartyservices == NULL) {
       require_once('Service/ThirdPartyServicesVanisherInterface.php');
       require_once('Service/IframeVanisherInterface.php');
       require_once('Service/IframeVanisher.php');
@@ -18,13 +24,11 @@ class CookiesFactory {
       require_once('Service/GoogleDoubleClickVanisher.php');
       require_once('Service/GoogleMapsVanisher.php');
       require_once('Service/GoogleTagManagerVanisher.php');
-      require_once('Service/GpsiesVanisher.php');
       require_once('Service/HotjarVanisher.php');
       require_once('Service/MatomoVanisher.php');
       require_once('Service/TwitterTimelineVanisher.php');
       require_once('Service/VimeoVanisher.php');
       require_once('Service/YoutubeVanisher.php');
-
 
       $vanisher = new \Backdrop\gdpr_cookies\Service\ThirdPartyServicesVanisher();
 
@@ -38,12 +42,9 @@ class CookiesFactory {
       $vanisher->add(new \Backdrop\gdpr_cookies\Service\MatomoVanisher());
       $vanisher->add(new \Backdrop\gdpr_cookies\Service\GoogleMapsVanisher($vanisher));
 
-      CookiesFactory::$thirdpartyservices = $vanisher;
+      self::$thirdpartyservices = $vanisher;
     }
 
-    return CookiesFactory::$thirdpartyservices;
-
-
+    return self::$thirdpartyservices;
   }
-
 }

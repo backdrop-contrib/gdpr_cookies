@@ -6,6 +6,7 @@ use Backdrop\gdpr_cookies\Entity\ThirdPartyServiceEntityInterface;
 
 /**
  * Class ThirdPartyServicesVanisher.
+ * Base class for Third Party Services.
  *
  * @package Backdrop\gdpr_cookies\Service
  */
@@ -35,20 +36,17 @@ class ThirdPartyServicesVanisher {
     $scripts = array();
     $scripts['begin'] = '<script type="text/javascript">';
 
-
     $services = array();
     $query = new \EntityFieldQuery();
     $query->entityCondition('entity_type', 'gdpr_cookies_service')
-      ->propertyCondition('enabled', true);
+      ->propertyCondition('enabled', TRUE);
 
     $result = $query->execute();
-
 
     if (isset($result['gdpr_cookies_service'])) {
       $news_items_nids = array_keys($result['gdpr_cookies_service']);
       $services = entity_load('gdpr_cookies_service', $news_items_nids);
     }
-
 
     foreach ($services as $service) {
       // Check if the vanisher configured to use exists.
@@ -109,8 +107,8 @@ class ThirdPartyServicesVanisher {
    */
   public function getInstalledVanisherNames() {
     $all = array();
-    foreach($this->vanisher as $vanish){
-     $all[$vanish->getVanisherName()] = (string)$vanish;
+    foreach ($this->vanisher as $vanish) {
+      $all[$vanish->getVanisherName()] = (string) $vanish;
     }
     return $all;
   }

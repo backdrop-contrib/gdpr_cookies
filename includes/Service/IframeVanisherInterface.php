@@ -4,6 +4,7 @@ namespace Backdrop\gdpr_cookies\Service;
 
 /**
  * Interface IframeVanisherInterface.
+ * Interface for iframe vanishers.
  *
  * @package Backdrop\gdpr_cookies\Service
  */

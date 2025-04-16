@@ -4,6 +4,7 @@ namespace Backdrop\gdpr_cookies\Service;
 
 /**
  * Class GoogleAnalyticsVanisher.
+ * Vanisher for Google Analytics service.
  *
  * @package Backdrop\gdpr_cookies\Service
  */
@@ -46,14 +47,13 @@ class GoogleAnalyticsVanisher extends ThirdPartyServicesVanisher implements Thir
   protected function getReplacementScript(array $data) {
     $ga_more = implode("\n", $data['google_analytics_more']);
 
-    $ga_cookie_domain = isset($data['google_analytics_cookie_domain']) ?
-      $data['google_analytics_cookie_domain'] : 'auto';
+    $ga_cookie_domain = isset($data['google_analytics_cookie_domain']) ? $data['google_analytics_cookie_domain'] : 'auto';
 
     return <<< EOF
         tarteaucitron.user.analyticsUa = '{$data['google_analytics_id']}';
         tarteaucitron.user.analyticsCookieDomain = '{$ga_cookie_domain}';
         tarteaucitron.user.analyticsMore = function () { {$ga_more} };
-EOF;
+    EOF;
   }
 
   /**

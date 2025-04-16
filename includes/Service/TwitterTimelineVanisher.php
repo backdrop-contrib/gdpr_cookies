@@ -3,7 +3,8 @@
 namespace Backdrop\gdpr_cookies\Service;
 
 /**
- * Class GpsiesVanisher.
+ * Class TwitterTimelineVanisher.
+ * Vanisher for Twitter (X) Timeline.
  *
  * @package Backdrop\gdpr_cookies\Service
  */
@@ -25,7 +26,6 @@ class TwitterTimelineVanisher extends ThirdPartyServicesVanisher implements Thir
     foreach ($twitter_links as $links) {
       $content = str_replace($links, '<span class="tacTwitterTimelines"></span>' . $links, $content);
     }
-
 
     $replaced_scripts[] = $this->getReplacementScript();
     return implode("\n", $replaced_scripts);

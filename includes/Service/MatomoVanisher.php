@@ -4,6 +4,7 @@ namespace Backdrop\gdpr_cookies\Service;
 
 /**
  * Class MatomoVanisher.
+ * Vanisher for Matomo Analytics cookies.
  *
  * @package Backdrop\gdpr_cookies\Service
  */

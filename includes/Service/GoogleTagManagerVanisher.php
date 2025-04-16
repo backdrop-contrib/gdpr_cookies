@@ -4,6 +4,7 @@ namespace Backdrop\gdpr_cookies\Service;
 
 /**
  * Class GoogleTagManagerVanisher.
+ * Vanisher for the Google Tag manager Service.
  *
  * @package Backdrop\gdpr_cookies\Service
  */

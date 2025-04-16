@@ -6,6 +6,7 @@ use Backdrop\gdpr_cookies\Entity\ThirdPartyServiceEntityInterface;
 
 /**
  * Class EmbeddedVideoVanisher.
+ * Abstract class definition to be used by Video vanishers.
  *
  * @package Backdrop\gdpr_cookies\Service
  */

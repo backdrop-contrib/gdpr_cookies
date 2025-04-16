@@ -4,6 +4,7 @@ namespace Backdrop\gdpr_cookies\Service;
 
 /**
  * Class GoogleDoubleClickVanisher.
+ * Vanisher for the Google DoubleClick Digital Marketing platform.
  *
  * @package Backdrop\gdpr_cookies\Service
  */

@@ -5,6 +5,7 @@ use Backdrop\gdpr_cookies\Entity\ThirdPartyServiceEntityInterface;
 
 /**
  * Class YoutubeVanisher.
+ * Vanisher for embedded YouTube iframes.
  *
  * @package Backdrop\gdpr_cookies\Service
  */
@@ -16,8 +17,6 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
    * @see https://stackoverflow.com/a/9102270/2779907
    */
   const YOUTUBE_VIDEO_ID_REGEX = '~^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*~i';
-
-
 
   /**
    * {@inheritdoc}

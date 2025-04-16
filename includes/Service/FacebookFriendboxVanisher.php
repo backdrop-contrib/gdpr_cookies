@@ -4,6 +4,7 @@ namespace Backdrop\gdpr_cookies\Service;
 
 /**
  * Class FacebookFriendboxVanisher.
+ * Vanisher for Facebook Friendbox Service.
  *
  * @package Backdrop\gdpr_cookies\Service
  */

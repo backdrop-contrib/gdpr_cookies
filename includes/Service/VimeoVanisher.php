@@ -4,6 +4,7 @@ namespace Backdrop\gdpr_cookies\Service;
 
 /**
  * Class VimeoVanisher.
+ * Vanisher for embedded Vimeo video player.
  *
  * @package Backdrop\gdpr_cookies\Service
  */
