@@ -6,6 +6,8 @@ namespace Backdrop\gdpr_cookies\Entity;
 /**
  * Interface ThirdPartyServiceEntityInterface.
  *
+ * Default interface for Third Party Service entity.
+ *
  * @package Backdrop\gdpr_cookies\Entity
  */
 interface ThirdPartyServiceEntityInterface {

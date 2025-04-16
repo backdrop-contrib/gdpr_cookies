@@ -3,11 +3,12 @@
 namespace Backdrop\gdpr_cookies\Service;
 
 /**
- * Class FacebookLikesVanisher.
+ * Class FacebookCommentsVanisher.
+ * Vanisher for Facebook Comments service.
  *
  * @package Backdrop\gdpr_cookies\Service
  */
-class FacebookLikesVanisher extends ThirdPartyServicesVanisher implements ThirdPartyServicesVanisherInterface {
+class FacebookCommentsVanisher extends ThirdPartyServicesVanisher implements ThirdPartyServicesVanisherInterface {
 
   /**
    * {@inheritdoc}
@@ -28,7 +29,7 @@ class FacebookLikesVanisher extends ThirdPartyServicesVanisher implements ThirdP
    *   The replacement script.
    */
   public function getReplacementScript() {
-    return '(tarteaucitron.job = tarteaucitron.job || []).push(\'facebook\');';
+    return '(tarteaucitron.job = tarteaucitron.job || []).push(\'facebookcomment\');';
   }
 
   /**
@@ -38,7 +39,7 @@ class FacebookLikesVanisher extends ThirdPartyServicesVanisher implements ThirdP
    *   The vanisher name.
    */
   public function getVanisherName() {
-    return 'facebook_likes_vanisher';
+    return 'facebook_comments_vanisher';
   }
 
   /**
@@ -48,7 +49,7 @@ class FacebookLikesVanisher extends ThirdPartyServicesVanisher implements ThirdP
    *   The name of this vanisher.
    */
   public function __toString() {
-    return 'Facebook Likes';
+    return 'Facebook Comments';
   }
 
 }

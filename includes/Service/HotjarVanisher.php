@@ -4,6 +4,7 @@ namespace Backdrop\gdpr_cookies\Service;
 
 /**
  * Class HotjarVanisher.
+ * Vanisher for HotJar Service.
  *
  * @package Backdrop\gdpr_cookies\Service
  */
@@ -35,15 +36,17 @@ class HotjarVanisher extends ThirdPartyServicesVanisher implements ThirdPartySer
   /**
    * Returns the replacement script.
    *
-   * @param string $gtm_id
-   *   The google tag manager id.
+   * @param string $hotjar_sv
+   *   The HotJar SV.
+   * @param string $hotjar_id
+   *   The HotJar ID.
    *
    * @return string
    *   The replacement script.
    */
-  public function getReplacementScript($hjsv , $hjid) {
-    return 'tarteaucitron.user.hotjarId = \'' . $hjid . '\';
-    tarteaucitron.user.hotjarsv = \'' . $hjsv . '\';';
+  public function getReplacementScript($hotjar_sv, $hotjar_id) {
+    return 'tarteaucitron.user.hotjarId = \'' . $hotjar_id . '\';
+    tarteaucitron.user.hotjarsv = \'' . $hotjar_sv . '\';';
   }
 
   /**
@@ -61,7 +64,7 @@ class HotjarVanisher extends ThirdPartyServicesVanisher implements ThirdPartySer
   protected function getHjid($script) {
     $matches = array();
     if (FALSE === preg_match("/hjid\:(.*?)\,/s", $script, $matches)) {
-      throw new \Exception('Could not find google tag manager id in script.');
+      throw new \Exception('Could not find HotJar ID in script.');
     }
     return $matches[1];
   }

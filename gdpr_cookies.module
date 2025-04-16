@@ -1,32 +1,42 @@
 <?php
-require_once('src/Entity/ThirdPartyServiceEntityInterface.php');
+/**
+ * @file
+ *
+ * Hooks and main functions for GDPR Cookies.
+ */
+
+require_once('includes/Entity/ThirdPartyServiceEntityInterface.php');
 
 /**
  * Implements hook_init().
  */
 function gdpr_cookies_init() {
 
-  require_once("src/CookiesFactory.php");
+  require_once("includes/CookiesFactory.php");
 
   backdrop_add_library('gdpr_cookies', 'tarteaucitron', TRUE);
 
+  $config = config('gdpr_cookies.settings');
   backdrop_add_js(array(
     'gdpr_cookies' => array(
-      'hashtag' => config_get('gdpr_cookies.settings','gdpr_cookies_hashtag'),
-      'highPrivacy' => config_get('gdpr_cookies.settings','gdpr_cookies_high_privacy'),
-      'orientation' => config_get('gdpr_cookies.settings','gdpr_cookies_orientation'),
-      'adblocker' => config_get('gdpr_cookies.settings','gdpr_cookies_adblocker'),
-      'showAlertSmall' => config_get('gdpr_cookies.settings','gdpr_cookies_show_alert_small'),
-      'cookieslist' => config_get('gdpr_cookies.settings','gdpr_cookies_cookieslist'),
-      'removeCredit' => config_get('gdpr_cookies.settings','gdpr_cookies_remove_credit'),
-      'defaultRejected' => config_get('gdpr_cookies.settings','gdpr_cookies_default_rejected'),
+      'hashtag' => $config->get('gdpr_cookies_hashtag'),
+      'highPrivacy' => $config->get('gdpr_cookies_high_privacy'),
+      'orientation' => $config->get('gdpr_cookies_orientation'),
+      'adblocker' => $config->get('gdpr_cookies_adblocker'),
+      'showAlertSmall' => $config->get('gdpr_cookies_show_alert_small'),
+      'cookieslist' => $config->get('gdpr_cookies_cookieslist'),
+      'removeCredit' => $config->get('gdpr_cookies_remove_credit'),
+      'defaultRejected' => $config->get('gdpr_cookies_default_rejected'),
     ),
   ), 'setting');
 
-  // Add style modifications for Backdrop
-  backdrop_add_css(backdrop_get_path('module', 'gdpr_cookies') . '/gdpr_cookies.css');
+  // Add style modifications for Backdrop.
+  backdrop_add_css(backdrop_get_path('module', 'gdpr_cookies') . '/css/gdpr_cookies.css');
 }
 
+/**
+ * Implements hook_exit().
+ */
 function gdpr_cookies_exit() {
   // Get current path value.
   $current_path = function_exists('current_path') ? current_path() : $_GET['q'];
@@ -44,22 +54,21 @@ function gdpr_cookies_exit() {
 
     // If the content should be encoded, try to decode it.
     $decoded = FALSE;
-    if (config_get('gdpr_cookies.settings','gdpr_cookies_page_compression') && extension_loaded('zlib')) {
+    $page_compression_config = config_get('gdpr_cookies.settings', 'gdpr_cookies_page_compression');
+    if ($page_compression_config && extension_loaded('zlib')) {
       $decoded = @gzinflate(substr(substr($page, 10), 0, -8));
       if ($decoded) {
         $page = $decoded;
       }
     }
 
-
     $factory = new CookiesFactory();
     $vanisher = $factory->createThirdPartyServicesVanisher();
     $page = $vanisher->vanish($page);
 
-
     // If the content was decoded before being minified, it needs to be
     // re-encoded.
-    if (config_get('gdpr_cookies.settings','gdpr_cookies_page_compression') && extension_loaded('zlib') && $decoded) {
+    if ($page_compression_config && extension_loaded('zlib') && $decoded) {
       $page = gzencode($page, 9, FORCE_GZIP);
     }
 
@@ -67,7 +76,6 @@ function gdpr_cookies_exit() {
     ob_clean();
     print $page;
   }
-
 }
 
 /**
@@ -92,7 +100,7 @@ function gdpr_cookies_library_info() {
     'version' => '1.20.2',
     'website' => 'https://tarteaucitron.io/',
     'js' => array(
-      backdrop_get_path('module', 'gdpr_cookies') . '/js/tarteaucitron/tarteaucitron.js' => array(
+      backdrop_get_path('module', 'gdpr_cookies') . '/libraries/tarteaucitron/tarteaucitron.js' => array(
         'type' => 'file',
         'scope' => 'footer',
         'weight' => -4,
@@ -102,7 +110,7 @@ function gdpr_cookies_library_info() {
         'scope' => 'footer',
         'weight' => -3,
       ),
-      backdrop_get_path('module', 'gdpr_cookies') . '/js/tarteaucitron/tarteaucitron.services.js' => array(
+      backdrop_get_path('module', 'gdpr_cookies') . '/libraries/tarteaucitron/tarteaucitron.services.js' => array(
         'type' => 'file',
         'scope' => 'footer',
         'weight' => -2,
@@ -113,7 +121,6 @@ function gdpr_cookies_library_info() {
         'weight' => -1,
       ),
     ),
-
   );
   return $libraries;
 }
@@ -148,11 +155,14 @@ function gdpr_cookies_permission() {
   return $permissions;
 }
 
+/**
+ * Implements hook_menu().
+ */
 function gdpr_cookies_menu() {
   return array(
     'admin/config/system/gdpr-cookies/settings' => array(
       'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-      'title' => t('Gdpr cookies Settings'),
+      'title' => t('GDPR Cookies Settings'),
       'description' => 'Configure GDPR Cookies',
       'page callback' => 'backdrop_get_form',
       'page arguments' => array('gdpr_cookies_settings_page'),
@@ -199,7 +209,6 @@ function gdpr_cookies_service_add() {
   return backdrop_get_form('gdpr_cookies_service_form', $entity);
 }
 
-
 /**
  * Form function to create an entity_example_basic entity.
  *
@@ -224,18 +233,15 @@ function gdpr_cookies_service_form($form, &$form_state, $entity) {
     '#type' => 'textfield',
     '#title' => t('Name'),
     '#description' => t('This is the name of the service.'),
-    '#default_value' => property_exists($gdpr_cookies_service, 'name') ?  $gdpr_cookies_service->getName() : '',
+    '#default_value' => property_exists($gdpr_cookies_service, 'name') ? $gdpr_cookies_service->getName() : '',
   );
-
-
 
   $form['vanisher'] = array(
     '#type' => 'select',
     '#title' => 'Vanisher',
     '#description' => t('Choose the vanisher for the service control.'),
-    '#default_value' => property_exists($gdpr_cookies_service, 'vanisher') ?  $gdpr_cookies_service->getVanisher() : '',
-    '#options' => $vanisher->getInstalledVanisherNames() ?: [], // todo lars
-
+    '#default_value' => property_exists($gdpr_cookies_service, 'vanisher') ? $gdpr_cookies_service->getVanisher() : '',
+    '#options' => $vanisher->getInstalledVanisherNames() ?: [],
     '#empty_value' => '',
     '#required' => TRUE,
   );
@@ -244,9 +250,8 @@ function gdpr_cookies_service_form($form, &$form_state, $entity) {
     '#type' => 'checkbox',
     '#title' => t('Enable Service Control?'),
     '#description' => t('If activated this service will be controlled with tarteaucitron.'),
-    '#default_value' => property_exists($gdpr_cookies_service, 'enabled') ?  $gdpr_cookies_service->isEnabled() : FALSE,
+    '#default_value' => property_exists($gdpr_cookies_service, 'enabled') ? $gdpr_cookies_service->isEnabled() : FALSE,
   );
-
 
   $form['optional_fields'] = array(
     '#type' => 'fieldset',
@@ -259,7 +264,7 @@ function gdpr_cookies_service_form($form, &$form_state, $entity) {
     '#type' => 'textarea',
     '#title' => t('Info Content'),
     '#description' => t('This content will be displayed instead until the user activates the service.'),
-    '#default_value' => property_exists($gdpr_cookies_service, 'info') ?  $gdpr_cookies_service->getInfo() : '',
+    '#default_value' => property_exists($gdpr_cookies_service, 'info') ? $gdpr_cookies_service->getInfo() : '',
     '#required' => FALSE,
   );
 
@@ -272,6 +277,9 @@ function gdpr_cookies_service_form($form, &$form_state, $entity) {
   return $form;
 }
 
+/**
+ * Callback to check that the service should be deleted.
+ */
 function gdpr_cookies_service_form_delete_confirm($form, &$form_state, $entity) {
 
   $form['_gdpr_cookies_service'] = array(
@@ -284,7 +292,9 @@ function gdpr_cookies_service_form_delete_confirm($form, &$form_state, $entity) 
 
 }
 
-
+/**
+ * Callback to delete the service.
+ */
 function gdpr_cookies_service_form_delete_confirm_submit($form, &$form_state) {
   if ($form_state['values']['confirm']) {
     $entity = $form_state['values']['_gdpr_cookies_service'];
@@ -295,14 +305,12 @@ function gdpr_cookies_service_form_delete_confirm_submit($form, &$form_state) {
   $form_state['redirect'] = 'admin/config/system/gdpr-cookies/gdpr-cookies-service';
 }
 
-
 /**
  * Use the controller to delete the entity.
  */
 function gdpr_cookies_service_delete($entity) {
   entity_get_controller('gdpr_cookies_service')->delete($entity);
 }
-
 
 /**
  * Validation handler for entity_example_basic_add_form form.
@@ -313,7 +321,6 @@ function gdpr_cookies_service_delete($entity) {
 function gdpr_cookies_service_form_validate($form, &$form_state) {
   field_attach_form_validate('gdpr_cookies_service', $form_state['values']['basic_entity'], $form, $form_state);
 }
-
 
 /**
  * Form submit handler: Submits basic_add_form information.
@@ -327,9 +334,7 @@ function gdpr_cookies_service_form_submit($form, &$form_state) {
   $entity->vanisher = $form_state['values']['vanisher'];
   $entity->info = $form_state['values']['info'];
 
-
   $id = gdpr_cookies_service_save($entity);
-
 
   if ($id) {
     backdrop_set_message(t('Saved the %label Third Party Service.', array(
@@ -373,15 +378,13 @@ function gdpr_cookies_service_info_page() {
  */
 function gdpr_cookies_service_list_entities() {
 
-
   $content = array();
 
-
   $content['add_button'] = array(
-    '#type' => 'markup',
-    '#markup' => '<a href="/admin/config/system/gdpr-cookies/gdpr-cookies-service/add">' . t('+ Add third party service') . '</a>',
+    '#type' => 'link',
+    '#title' => '+' . t('Add third party service'),
+    '#href'  => 'admin/config/system/gdpr-cookies/gdpr-cookies-service/add',
   );
-
 
   // Load all of our entities.
   $entities = gdpr_cookies_service_load_multiple();
@@ -393,9 +396,9 @@ function gdpr_cookies_service_list_entities() {
           'name' => $entity->getName(),
           'vanisher' => $entity->getVanisher(),
           'enabled' => $entity->isEnabled() ? t('Enabled') : t('Disabled'),
-          'edit' => "<a href='/admin/config/system/gdpr-cookies/gdpr-cookies-service/" . $entity->getName() . "'>" . t('Edit') . "</a>",
-          'delete' => "<a href='/admin/config/system/gdpr-cookies/gdpr-cookies-service/" . $entity->getName() . "/delete'>" . t('Delete') . "</a>",
-        )
+          'edit' => l( t('Edit'), 'admin/config/system/gdpr-cookies/gdpr-cookies-service/' . $entity->getName()),
+          'delete' => l( t('Delete'), 'admin/config/system/gdpr-cookies/gdpr-cookies-service/' . $entity->getName() . '/delete'),
+        ),
       );
     }
     // Put our entities into a themed table. See theme_table() for details.
@@ -407,7 +410,7 @@ function gdpr_cookies_service_list_entities() {
         t('Vanisher'),
         t('Activated'),
         '',
-        ''
+        '',
       ),
     );
   }
@@ -433,35 +436,42 @@ function gdpr_cookies_service_load_multiple($basic_ids = FALSE, $conditions = ar
   return entity_load('gdpr_cookies_service', $basic_ids, $conditions, $reset);
 }
 
+/**
+ * Load a service.
+ */
 function gdpr_cookies_service_load($id, $reset = FALSE) {
   $ret = gdpr_cookies_service_load_multiple(array($id), array(), $reset);
   return $ret ? reset($ret) : FALSE;
 }
 
 /**
- * Yet another FAPI form.
+ * Define the settings page.
  */
 function gdpr_cookies_settings_page() {
   $form = array();
+  // Define the form config for retrieving and saving config.
+  $config = config('gdpr_cookies.settings');
+  $form['#config'] = 'gdpr_cookies.settings';
+
   $form['gdpr_cookies_hashtag'] = array(
     '#type' => 'textfield',
     '#title' => t('Hashtag'),
     '#description' => t('Automatically open the panel with the hashtag.'),
-    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_hashtag'),
+    '#default_value' => $config->get('gdpr_cookies_hashtag'),
   );
 
   $form['gdpr_cookies_high_privacy'] = array(
     '#type' => 'checkbox',
     '#title' => t('High Privacy'),
     '#description' => t('Disabling the auto consent feature on navigation?'),
-    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_high_privacy') ? TRUE : FALSE,
+    '#default_value' => $config->get('gdpr_cookies_high_privacy') ? TRUE : FALSE,
   );
 
   $form['gdpr_cookies_orientation'] = array(
     '#type' => 'radios',
     '#title' => t('Orientation'),
     '#description' => t('The orientation of the big banner.'),
-    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_orientation'),
+    '#default_value' => $config->get('gdpr_cookies_orientation'),
     '#options' => array(
       'top' => t('Top'),
       'bottom' => t('Bottom'),
@@ -472,65 +482,40 @@ function gdpr_cookies_settings_page() {
     '#type' => 'checkbox',
     '#title' => t('Ad-Blocker'),
     '#description' => t('Display a message if an adblocker is detected.'),
-    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_adblocker') ? TRUE : FALSE,
+    '#default_value' => $config->get('gdpr_cookies_adblocker') ? TRUE : FALSE,
   );
 
   $form['gdpr_cookies_show_alert_small'] = array(
     '#type' => 'checkbox',
     '#title' => t('Show Alert Small'),
     '#description' => t('Show the small banner on bottom right?'),
-    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_show_alert_small') ? TRUE : FALSE,
+    '#default_value' => $config->get('gdpr_cookies_show_alert_small') ? TRUE : FALSE,
   );
 
   $form['gdpr_cookies_cookieslist'] = array(
     '#type' => 'checkbox',
     '#title' => t('Cookies List'),
     '#description' => t('Display the list of cookies installed?'),
-    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_cookieslist') ? TRUE : FALSE,
+    '#default_value' => $config->get('gdpr_cookies_cookieslist') ? TRUE : FALSE,
   );
 
   $form['gdpr_cookies_remove_credit'] = array(
     '#type' => 'checkbox',
     '#title' => t('Remove Credit'),
     '#description' => t('Remove the credit link?'),
-    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_remove_credit') ? TRUE : FALSE,
+    '#default_value' => $config->get('gdpr_cookies_remove_credit') ? TRUE : FALSE,
   );
 
   $form['gdpr_cookies_default_rejected'] = array(
     '#type' => 'checkbox',
     '#title' => t('Default Rejected'),
     '#description' => t('Should all services be rejected by default?'),
-    '#default_value' => config_get('gdpr_cookies.settings','gdpr_cookies_default_rejected') ? TRUE : FALSE,
+    '#default_value' => $config->get('gdpr_cookies_default_rejected') ? TRUE : FALSE,
   );
 
-  // Add a submit button
-  $form['actions']['#type'] = 'actions';
-  $form['actions']['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save configuration'),
-  );
-
+  $form = system_settings_form($form);
   return $form;
 }
-
-/**
- * Submit handler for module_settings_form().
- */
-function gdpr_cookies_settings_page_submit($form, &$form_state) {
-  $config = config('gdpr_cookies.settings');
-  $config->set('gdpr_cookies_hashtag', $form_state['values']['gdpr_cookies_hashtag']);
-  $config->set('gdpr_cookies_high_privacy', $form_state['values']['gdpr_cookies_high_privacy']);
-  $config->set('gdpr_cookies_orientation', $form_state['values']['gdpr_cookies_orientation']);
-  $config->set('gdpr_cookies_adblocker', $form_state['values']['gdpr_cookies_adblocker']);
-  $config->set('gdpr_cookies_show_alert_small', $form_state['values']['gdpr_cookies_show_alert_small']);
-  $config->set('gdpr_cookies_cookieslist', $form_state['values']['gdpr_cookies_cookieslist']);
-  $config->set('gdpr_cookies_remove_credit', $form_state['values']['gdpr_cookies_remove_credit']);
-  $config->set('gdpr_cookies_default_rejected', $form_state['values']['gdpr_cookies_default_rejected']);
-  $config->save();
-
-  backdrop_set_message(t('Settings saved for GDPR Cookies.'));
-}
-
 
   /**
  * Implements hook_entity_info().
@@ -562,6 +547,9 @@ function gdpr_cookies_entity_info() {
   );
 }
 
+/**
+ * Define no default.
+ */
 function gdpr_cookies_default_gdpr_cookies_service() {
   return array();
 }
@@ -602,8 +590,8 @@ function gdpr_cookies_config_info() {
  */
 function gdpr_cookies_autoload_info() {
   return array(
-    'CookiesFactory' => 'src/Service/CookiesFactory.php',
-    'ThirdPartyServiceEntity' => 'src/Entity/ThirdPartyServiceEntity.php',
+    'CookiesFactory' => 'includes/Service/CookiesFactory.php',
+    'ThirdPartyServiceEntity' => 'includes/Entity/ThirdPartyServiceEntity.php',
   );
 }
 

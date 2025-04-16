@@ -59,7 +59,8 @@ Requirements <!-- Do not include this section if there are no requirements. -->
 This module requires that the following modules are also enabled:
 
  * [Entity Plus module](https://github.com/backdrop-contrib/entity_plus)
- * The `tarteaucitron.js` library is bundled into this module
+
+The `tarteaucitron.js` library is bundled into this module
 
 Installation <!-- This section is required. -->
 ------------

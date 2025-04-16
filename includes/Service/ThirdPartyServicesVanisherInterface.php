@@ -4,6 +4,7 @@ namespace Backdrop\gdpr_cookies\Service;
 
 /**
  * Interface ThirdPartyServicesVanisherInterface.
+ * Interface for Third Party Services.
  *
  * @package Backdrop\gdpr_cookies\Service
  */

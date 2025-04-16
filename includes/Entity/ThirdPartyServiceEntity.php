@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Define each third party service as an entity.
+ */
 class ThirdPartyServiceEntity extends \Entity implements \Backdrop\gdpr_cookies\Entity\ThirdPartyServiceEntityInterface {
 
   /**
@@ -59,11 +62,16 @@ class ThirdPartyServiceEntity extends \Entity implements \Backdrop\gdpr_cookies\
     return $uri;
   }
 
-
+  /**
+  * Return the name of the service.
+  */
   public function getName(){
     return $this->name;
   }
 
+  /**
+   * Get info property if it exists.
+   */
   public function getInfo(){
     return $this->info;
   }

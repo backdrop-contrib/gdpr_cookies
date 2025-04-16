@@ -6,6 +6,7 @@ use Backdrop\gdpr_cookies\Entity\ThirdPartyServiceEntityInterface;
 
 /**
  * Class IframeVanisher.
+ * Abstract class to use for iframe based Vanishers.
  *
  * @package Backdrop\gdpr_cookies\Service
  */
@@ -125,18 +126,17 @@ abstract class IframeVanisher implements ThirdPartyServicesVanisherInterface, If
    */
   protected function getReplacementScript() {
     return <<< EOF
-var tarteaucitron_interval = setInterval(function() {
-            if (typeof tarteaucitron.services.iframe.name == 'undefined') {
-                return;
-            }
-            clearInterval(tarteaucitron_interval);
-            
-            tarteaucitron.services.iframe.name = '{$this->getIframeName()}';
-            tarteaucitron.services.iframe.uri = '{$this->getIframePrivacyUrl()}';
-            tarteaucitron.services.iframe.cookies = {$this->createCookiesString($this->getIframeCookies())};
-        }, 10);
-        (tarteaucitron.job = tarteaucitron.job || []).push('{$this->getIframeName()}');
-EOF;
+      var tarteaucitron_interval = setInterval(function() {
+        if (typeof tarteaucitron.services.iframe.name == 'undefined') {
+          return;
+        }
+        clearInterval(tarteaucitron_interval);
+        tarteaucitron.services.iframe.name = '{$this->getIframeName()}';
+        tarteaucitron.services.iframe.uri = '{$this->getIframePrivacyUrl()}';
+        tarteaucitron.services.iframe.cookies = {$this->createCookiesString($this->getIframeCookies())};
+      }, 10);
+      (tarteaucitron.job = tarteaucitron.job || []).push('{$this->getIframeName()}');
+    EOF;
   }
 
   /**

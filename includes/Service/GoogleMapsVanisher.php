@@ -4,6 +4,7 @@ namespace Backdrop\gdpr_cookies\Service;
 
 /**
  * Class GoogleMapsVanisher.
+ * Vanisher for Google Maps.
  *
  * @package Backdrop\gdpr_cookies\Service
  */
