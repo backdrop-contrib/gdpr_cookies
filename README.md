@@ -81,7 +81,7 @@ Bugs and feature requests should be reported in [the Issue Queue](https://github
 ## Credits <!-- This section is required. -->
 - Current development supported by [System Horizons Ltd](https://www.systemhorizons.co.uk)
 - Ported to Backdrop CMS by [Graham Oliver](https://github.com/Graham-72).
-- Maintainers of Blizz Vanisher for Drupal:
+- Maintainers of Blizz Vanisher (which this module is based on) for Drupal:
   - [Lars Rosenberg](https://www.drupal.org/u/rackberg)
   - [Christian Lamine](https://www.drupal.org/u/chilihh)
   - [marvin_B8](https://www.drupal.org/u/marvin_b8)
