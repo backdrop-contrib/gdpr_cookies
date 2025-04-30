@@ -137,23 +137,23 @@ function gdpr_cookies_library_info() {
 function gdpr_cookies_permission() {
   $permissions = array(
     'administer gdpr cookies' => array(
-      'title' => t('Administer task types'),
+      'title' => t('Administer GDPR Cookies'),
       'description' => t('Allows users to configure GDPR Cookies.'),
       'restrict access' => TRUE,
     ),
     'create gdpr_cookies_service entities' => array(
-      'title' => t('Create a gdpr_cookies_service'),
-      'description' => t('Allows users to create gdpr_cookies_services.'),
+      'title' => t('Create a GDPR Cookies Service'),
+      'description' => t('Allows users to create GDPR Cookies Services.'),
       'restrict access' => TRUE,
     ),
     'view all gdpr_cookies_service entity' => array(
-      'title' => t('View a gdpr_cookies_service'),
-      'description' => t('Allows users to view gdpr_cookies_services.'),
+      'title' => t('View a GDPR Cookies Service'),
+      'description' => t('Allows users to view GDPR Cookies Services.'),
       'restrict access' => TRUE,
     ),
     'edit gdpr_cookies_service entities' => array(
-      'title' => t('Edit any gdpr_cookies_service'),
-      'description' => t('Allows users to edit any gdpr_cookies_service.'),
+      'title' => t('Edit any GDPR Cookies Service'),
+      'description' => t('Allows users to edit any GDPR Cookies Service.'),
       'restrict access' => TRUE,
     ),
   );
