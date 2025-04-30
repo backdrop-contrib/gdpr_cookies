@@ -17,6 +17,11 @@ function gdpr_cookies_init() {
   backdrop_add_library('gdpr_cookies', 'tarteaucitron', TRUE);
 
   $config = config('gdpr_cookies.settings');
+  $privacy_link_setting = $config->get('gdpr_cookies_privacy_link');
+  if (!empty($privacy_link_setting)) {
+    $nid = gdpr_cookies_node_autocomplete_validate($privacy_link_setting);
+    $privacy_url = '/' . backdrop_get_path_alias('node/' . $nid);
+  }
   backdrop_add_js(array(
     'gdpr_cookies' => array(
       'hashtag' => $config->get('gdpr_cookies_hashtag'),
@@ -27,6 +32,7 @@ function gdpr_cookies_init() {
       'cookieslist' => $config->get('gdpr_cookies_cookieslist'),
       'removeCredit' => $config->get('gdpr_cookies_remove_credit'),
       'defaultRejected' => $config->get('gdpr_cookies_default_rejected'),
+      'privacyUrl' => $privacy_url,
     ),
   ), 'setting');
 
@@ -162,7 +168,7 @@ function gdpr_cookies_menu() {
   return array(
     'admin/config/system/gdpr-cookies/settings' => array(
       'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-      'title' => t('GDPR Cookies Settings'),
+      'title' => 'GDPR Cookies Settings',
       'description' => 'Configure GDPR Cookies',
       'page callback' => 'backdrop_get_form',
       'page arguments' => array('gdpr_cookies_settings_page'),
@@ -197,6 +203,14 @@ function gdpr_cookies_menu() {
       'page arguments' => array('gdpr_cookies_service_form', 5),
       'type' => MENU_NORMAL_ITEM,
       'access arguments' => array('edit gdpr_cookies_service entities'),
+    ),
+    'gdpr_cookies_node_autocomplete' => array(
+      'title' => 'GDPR Cookies Node autocomplete for Privacy Policy',
+      'page callback' => 'gdpr_cookies_node_autocomplete',
+      'access callback' => 'user_access',
+      'access arguments' => array('administer gdpr cookies'),
+      'type' => MENU_CALLBACK,
+      'file' => 'gdpr_cookies.module',
     ),
   );
 }
@@ -513,9 +527,108 @@ function gdpr_cookies_settings_page() {
     '#default_value' => $config->get('gdpr_cookies_default_rejected') ? TRUE : FALSE,
   );
 
+  $form['gdpr_cookies_privacy_link'] = array(
+    '#title' => t('Privacy policy page'),
+    '#type' => 'textfield',
+    '#maxlength' => 512,
+    '#default_value' => $config->get('gdpr_cookies_privacy_link'),
+    '#autocomplete_path' => 'gdpr_cookies_node_autocomplete',
+  );
+
   $form = system_settings_form($form);
   return $form;
 }
+
+/**
+ * Autocomplete callback for privacy link.
+ */
+function gdpr_cookies_node_autocomplete($string = '') {
+  $matches = array();
+  if ($string) {
+    if (is_numeric($string)) {
+      // If user has entered a number search by Node ID.
+      $result = db_select('node')
+        ->fields('node', array('nid', 'title'))
+        ->condition('nid', $string)
+        ->addTag('node_access')
+        ->execute();
+      foreach ($result as $node) {
+        $matches[$node->title . " [$node->nid]"] = check_plain($node->title) . ' [' .$node->nid . ']';
+      }
+    }
+    // Search for nodes by title.
+    $result = db_select('node')
+      ->fields('node', array('nid', 'title'))
+      ->condition('title', '%' . db_like($string) . '%', 'LIKE')
+      ->addTag('node_access')
+      ->range(0, 10)
+      ->execute();
+    foreach ($result as $node) {
+      $matches[$node->title . " [$node->nid]"] = check_plain($node->title) . ' [' .$node->nid . ']';
+    }
+  }
+  backdrop_json_output($matches);
+}
+
+/**
+ * Node title validation handler.
+ * This is a slightly modified copy of node_autocomplete_validate().
+ *
+ * Validate handler to convert our string like "Some node title [3325]" into a
+ * nid.
+ *
+ * In case the user did not actually use the autocomplete or have a valid string
+ * there, we'll try to look up a result anyway giving it our best guess.
+ *
+ * Since the user chose a unique node, we must now use the same one in our
+ * submit handler, which means we need to look in the string for the nid.
+ *
+ * @param string $string
+ *   The string to validate.
+ * @return $nid
+ *   A node ID if matched, or NULL if no match.
+ *
+ * @see node_autocomplete_validate()
+ */
+function gdpr_cookies_node_autocomplete_validate($string) {
+  $matches = array();
+  $nid = 0;
+
+  // This preg_match() looks for the last pattern like [33334] and if found
+  // extracts the numeric portion.
+  $result = preg_match('/\[([0-9]+)\]$/', $string, $matches);
+  // If $result equals 1, we found a match.
+  if ($result == 1) {
+    // Get the first parenthesized match.
+    $nid = $matches[1];
+    // Verify that it's a valid nid and that the node has a token.
+    $node = node_load($nid);
+    if (empty($node)) {
+      return NULL;
+    }
+  }
+  // If the input was numeric, check that it matches a node.
+  elseif (is_numeric($string) && $node = node_load($string)) {
+    $nid = (int) $string;
+    // If the node doesn't have a token, return NULL.
+    if (is_null($node->tca_token)) {
+      return NULL;
+    }
+  }
+  // Check that the user may have directly entered a node title.
+  else {
+    $nid = db_select('node')
+      ->fields('node', array('nid'))
+      ->condition('title', db_like($string) . '%', 'LIKE')
+      ->addTag('node_access')
+      ->range(0, 1)
+      ->execute()
+      ->fetchField();
+  }
+
+  return (!empty($nid)) ? $nid : NULL;
+}
+
 
   /**
  * Implements hook_entity_info().
