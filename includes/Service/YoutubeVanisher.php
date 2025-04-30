@@ -27,7 +27,7 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
       $markup = '<div class="youtube_player" videoID="' . $data['video_id'] . '" ';
       $markup .= 'width="' . $data['width'] . '" ';
       $markup .= 'style="aspect-ratio:16/9;"></div>';
-      $markup .= $entity->getInfo();
+      $markup .= filter_xss_admin($entity->getInfo());
       return $markup;
     }
 
@@ -42,7 +42,7 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
         $data['video_id'],
         $data['width'],
         $data['height'],
-        $entity->getInfo(),
+        filter_xss_admin($entity->getInfo()),
       ],
       $this->getReplacementMarkupTemplate()
     );

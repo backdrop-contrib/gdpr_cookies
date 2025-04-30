@@ -27,7 +27,7 @@ abstract class EmbeddedVideoVanisher extends IframeVanisher implements IframeVan
         $data['video_id'],
         $data['width'],
         $data['height'],
-        $entity->getInfo(),
+        filter_xss_admin($entity->getInfo()),
       ],
       $this->getReplacementMarkupTemplate()
     );
