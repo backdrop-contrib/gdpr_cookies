@@ -20,7 +20,7 @@ function gdpr_cookies_init() {
   $privacy_link_setting = $config->get('gdpr_cookies_privacy_link');
   if (!empty($privacy_link_setting)) {
     $nid = gdpr_cookies_node_autocomplete_validate($privacy_link_setting);
-    $privacy_url = backdrop_get_path_alias('node/' . $nid);
+    $privacy_url = '/' . backdrop_get_path_alias('node/' . $nid);
   }
   backdrop_add_js(array(
     'gdpr_cookies' => array(
