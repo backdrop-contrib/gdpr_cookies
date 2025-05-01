@@ -22,6 +22,9 @@ function gdpr_cookies_init() {
     $nid = gdpr_cookies_node_autocomplete_validate($privacy_link_setting);
     $privacy_url = '/' . backdrop_get_path_alias('node/' . $nid);
   }
+  else {
+    $privacy_url = '';
+  }
   backdrop_add_js(array(
     'gdpr_cookies' => array(
       'hashtag' => $config->get('gdpr_cookies_hashtag'),
