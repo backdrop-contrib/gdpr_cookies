@@ -140,7 +140,7 @@ function gdpr_cookies_library_info() {
 function gdpr_cookies_permission() {
   $permissions = array(
     'administer gdpr cookies' => array(
-      'title' => t('Administer task types'),
+      'title' => t('Administer GDPR Cookies'),
       'description' => t('Allows users to configure GDPR Cookies.'),
       'restrict access' => TRUE,
     ),
