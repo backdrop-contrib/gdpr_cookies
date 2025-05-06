@@ -82,8 +82,6 @@ function gdpr_cookies_uninstall() {
 }
 
 /**
- * Implements hook_update_N().
- *
  * Rename table and modify some descriptions.
  */
 function gdpr_cookies_update_1001() {
@@ -153,4 +151,17 @@ function gdpr_cookies_update_1001() {
     'not null' => FALSE,
   );
   db_change_field('gdpr_cookies_service', 'module', 'module', $spec);
+}
+
+/**
+ * Force a rebuild of the GDPR Cookies menu items following fix to menu item
+ * definition.
+ */
+function gdpr_cookies_update_1002() {
+  db_delete('menu_links')
+    ->condition('link_path', '%' . db_like('gdpr-cookies') . '%', 'LIKE')
+    ->condition('module', 'system')
+    ->execute();
+  menu_cache_clear('management');
+  cache('admin_bar')->flush();
 }

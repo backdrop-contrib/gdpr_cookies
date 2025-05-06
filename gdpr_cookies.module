@@ -17,6 +17,9 @@ function gdpr_cookies_init() {
   backdrop_add_library('gdpr_cookies', 'tarteaucitron', TRUE);
 
   $config = config('gdpr_cookies.settings');
+
+  // Get the actual alias path to the privacy policy page from the referenced
+  // node.
   $privacy_link_setting = $config->get('gdpr_cookies_privacy_link');
   if (!empty($privacy_link_setting)) {
     $nid = gdpr_cookies_node_autocomplete_validate($privacy_link_setting);
@@ -25,17 +28,32 @@ function gdpr_cookies_init() {
   else {
     $privacy_url = '';
   }
+
+  // Get the path to the core icons if selected.
+  $icon_setting = $config->get('gdpr_cookies_icon');
+  if (!empty($icon_setting) && $icon_setting != 'default') {
+    $icon_src = '/core/misc/icons/' . $icon_setting . '.svg';
+  }
+  else {
+    $icon_src = '';
+  }
+
+  // Pass the settings to the script.
   backdrop_add_js(array(
     'gdpr_cookies' => array(
-      'hashtag' => $config->get('gdpr_cookies_hashtag'),
+      // Behavior.
       'highPrivacy' => $config->get('gdpr_cookies_high_privacy'),
-      'orientation' => $config->get('gdpr_cookies_orientation'),
+      'defaultRejected' => $config->get('gdpr_cookies_default_rejected'),
+      'hashtag' => $config->get('gdpr_cookies_hashtag'),
       'adblocker' => $config->get('gdpr_cookies_adblocker'),
+      // Appearance & Content.
+      'orientation' => $config->get('gdpr_cookies_orientation'),
+      'privacyUrl' => $privacy_url,
+      'iconSrc' => $icon_src,
+      'iconPosition' => $config->get('gdpr_cookies_icon_position') ?? 'BottomRight',
       'showAlertSmall' => $config->get('gdpr_cookies_show_alert_small'),
       'cookieslist' => $config->get('gdpr_cookies_cookieslist'),
       'removeCredit' => $config->get('gdpr_cookies_remove_credit'),
-      'defaultRejected' => $config->get('gdpr_cookies_default_rejected'),
-      'privacyUrl' => $privacy_url,
     ),
   ), 'setting');
 
@@ -113,6 +131,7 @@ function gdpr_cookies_library_info() {
         'type' => 'file',
         'scope' => 'footer',
         'weight' => -4,
+        'preprocess' => FALSE,
       ),
       backdrop_get_path('module', 'gdpr_cookies') . '/js/init_tarteaucitron.js' => array(
         'type' => 'file',
@@ -169,13 +188,18 @@ function gdpr_cookies_permission() {
  */
 function gdpr_cookies_menu() {
   return array(
-    'admin/config/system/gdpr-cookies/settings' => array(
-      'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-      'title' => 'GDPR Cookies Settings',
+    'admin/config/system/gdpr-cookies' => array(
+      'type' => MENU_NORMAL_ITEM,
+      'title' => 'GDPR Cookies',
       'description' => 'Configure GDPR Cookies',
       'page callback' => 'backdrop_get_form',
       'page arguments' => array('gdpr_cookies_settings_page'),
       'access arguments' => array('administer gdpr cookies'),
+    ),
+    'admin/config/system/gdpr-cookies/settings' => array(
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'title' => 'Settings',
+      'weight' => -10,
     ),
 
     'admin/config/system/gdpr-cookies/gdpr-cookies-service/%gdpr_cookies_service/delete' => array(
@@ -198,7 +222,7 @@ function gdpr_cookies_menu() {
       'title' => 'Add Third Party Service',
       'page callback' => 'gdpr_cookies_service_add',
       'type' => MENU_NORMAL_ITEM,
-      'access arguments' => array('edit gdpr_cookies_service entities'),
+      'access arguments' => array('create gdpr_cookies_service entities'),
     ),
     'admin/config/system/gdpr-cookies/gdpr-cookies-service/%gdpr_cookies_service' => array(
       'title' => 'Edit Third Party Service',
@@ -470,21 +494,50 @@ function gdpr_cookies_settings_page() {
   $config = config('gdpr_cookies.settings');
   $form['#config'] = 'gdpr_cookies.settings';
 
-  $form['gdpr_cookies_hashtag'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Hashtag'),
-    '#description' => t('Automatically open the panel with the hashtag.'),
-    '#default_value' => $config->get('gdpr_cookies_hashtag'),
+  $form['behavior'] = array(
+    '#type' => 'details',
+    '#summary' => t('Behavior'),
+    '#details' => t('Configure the behavior of the module and dialogs.'),
+    '#open' => TRUE,
+    '#attributes' => array(
+      'class' => array('description'),
+    ),
   );
-
-  $form['gdpr_cookies_high_privacy'] = array(
+  $form['behavior']['gdpr_cookies_high_privacy'] = array(
     '#type' => 'checkbox',
     '#title' => t('High Privacy'),
     '#description' => t('Disabling the auto consent feature on navigation?'),
     '#default_value' => $config->get('gdpr_cookies_high_privacy') ? TRUE : FALSE,
   );
+  $form['behavior']['gdpr_cookies_default_rejected'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Default Rejected'),
+    '#description' => t('Should all services be rejected by default?'),
+    '#default_value' => $config->get('gdpr_cookies_default_rejected') ? TRUE : FALSE,
+  );
+  $form['behavior']['gdpr_cookies_hashtag'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Hashtag'),
+    '#description' => t('Automatically open the panel with the hashtag.'),
+    '#default_value' => $config->get('gdpr_cookies_hashtag'),
+  );
+  $form['behavior']['gdpr_cookies_adblocker'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Ad-Blocker'),
+    '#description' => t('Display a message if an adblocker is detected.'),
+    '#default_value' => $config->get('gdpr_cookies_adblocker') ? TRUE : FALSE,
+  );
 
-  $form['gdpr_cookies_orientation'] = array(
+  $form['appearance'] = array(
+    '#type' => 'details',
+    '#summary' => t('Appearance & Content'),
+    '#details' => t('Configure the appearance and content of the banner and dialog.'),
+    '#open' => TRUE,
+    '#attributes' => array(
+      'class' => array('description'),
+    ),
+  );
+  $form['appearance']['gdpr_cookies_orientation'] = array(
     '#type' => 'radios',
     '#title' => t('Orientation'),
     '#description' => t('The orientation of the big banner.'),
@@ -494,48 +547,54 @@ function gdpr_cookies_settings_page() {
       'bottom' => t('Bottom'),
     ),
   );
-
-  $form['gdpr_cookies_adblocker'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Ad-Blocker'),
-    '#description' => t('Display a message if an adblocker is detected.'),
-    '#default_value' => $config->get('gdpr_cookies_adblocker') ? TRUE : FALSE,
+  $form['appearance']['gdpr_cookies_privacy_link'] = array(
+    '#title' => t('Privacy policy page'),
+    '#type' => 'textfield',
+    '#maxlength' => 512,
+    '#default_value' => $config->get('gdpr_cookies_privacy_link'),
+    '#autocomplete_path' => 'gdpr_cookies_node_autocomplete',
   );
-
-  $form['gdpr_cookies_show_alert_small'] = array(
+  $form['appearance']['gdpr_cookies_icon'] = array(
+    '#type' => 'radios',
+    '#title' => t('Icon after preferences selected'),
+    '#description' => t('The icon that will show once cookie preference have been set. You will need to clear both the site caches and browser caches to see the change.'),
+    '#default_value' => $config->get('gdpr_cookies_icon') ?? 'default',
+    '#options' => array(
+      'default' => t('Default (Tarte au Citron logo'),
+      'cookie' => t('Core cookie icon (cookie)'),
+      'cookie-fill' => t('Core filled cookie icon (cookie-fill)'),
+    ),
+  );
+  $form['appearance']['gdpr_cookies_icon_position'] = array(
+    '#type' => 'radios',
+    '#title' => t('Icon position'),
+    '#description' => t('The position of the icon. You may need to change the position if you enable "Show Alert Small" below as that will always show on the bottom right.'),
+    '#default_value' => $config->get('gdpr_cookies_icon_position') ?? 'BottomRight',
+    '#options' => array(
+      'BottomRight' => t('Bottom right'),
+      'BottomLeft' => t('Bottom left'),
+      'TopRight' => t('Top right'),
+      'TopLeft' => t('Top left'),
+    ),
+  );
+  $form['appearance']['gdpr_cookies_show_alert_small'] = array(
     '#type' => 'checkbox',
     '#title' => t('Show Alert Small'),
     '#description' => t('Show the small banner on bottom right?'),
     '#default_value' => $config->get('gdpr_cookies_show_alert_small') ? TRUE : FALSE,
   );
 
-  $form['gdpr_cookies_cookieslist'] = array(
+  $form['appearance']['gdpr_cookies_cookieslist'] = array(
     '#type' => 'checkbox',
     '#title' => t('Cookies List'),
     '#description' => t('Display the list of cookies installed?'),
     '#default_value' => $config->get('gdpr_cookies_cookieslist') ? TRUE : FALSE,
   );
-
-  $form['gdpr_cookies_remove_credit'] = array(
+  $form['appearance']['gdpr_cookies_remove_credit'] = array(
     '#type' => 'checkbox',
     '#title' => t('Remove Credit'),
     '#description' => t('Remove the credit link?'),
     '#default_value' => $config->get('gdpr_cookies_remove_credit') ? TRUE : FALSE,
-  );
-
-  $form['gdpr_cookies_default_rejected'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Default Rejected'),
-    '#description' => t('Should all services be rejected by default?'),
-    '#default_value' => $config->get('gdpr_cookies_default_rejected') ? TRUE : FALSE,
-  );
-
-  $form['gdpr_cookies_privacy_link'] = array(
-    '#title' => t('Privacy policy page'),
-    '#type' => 'textfield',
-    '#maxlength' => 512,
-    '#default_value' => $config->get('gdpr_cookies_privacy_link'),
-    '#autocomplete_path' => 'gdpr_cookies_node_autocomplete',
   );
 
   $form = system_settings_form($form);

@@ -7,5 +7,7 @@ tarteaucitron.init({
   "cookieslist": Boolean(Backdrop.settings.gdpr_cookies.cookieslist), /* Display the list of cookies installed ? */
   "removeCredit": Boolean(Backdrop.settings.gdpr_cookies.removeCredit), /* remove the credit link? */
   "defaultRejected": Boolean(Backdrop.settings.gdpr_cookies.defaultRejected), /* Should the services be rejected by default? */
-  "privacyUrl": Backdrop.settings.gdpr_cookies.privacyUrl /* Privacy policy url */
+  "privacyUrl": Backdrop.settings.gdpr_cookies.privacyUrl, /* Privacy policy url */
+  "iconSrc": Backdrop.settings.gdpr_cookies.iconSrc, /* Optional: URL or base64 encoded image */
+  "iconPosition": Backdrop.settings.gdpr_cookies.iconPosition /* Position of the icon between BottomRight, BottomLeft, TopRight and TopLeft */
 });
