@@ -131,6 +131,7 @@ function gdpr_cookies_library_info() {
         'type' => 'file',
         'scope' => 'footer',
         'weight' => -4,
+        'preprocess' => FALSE,
       ),
       backdrop_get_path('module', 'gdpr_cookies') . '/js/init_tarteaucitron.js' => array(
         'type' => 'file',
