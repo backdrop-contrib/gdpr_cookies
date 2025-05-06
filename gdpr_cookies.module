@@ -169,13 +169,18 @@ function gdpr_cookies_permission() {
  */
 function gdpr_cookies_menu() {
   return array(
-    'admin/config/system/gdpr-cookies/settings' => array(
-      'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
-      'title' => 'GDPR Cookies Settings',
+    'admin/config/system/gdpr-cookies' => array(
+      'type' => MENU_NORMAL_ITEM,
+      'title' => 'GDPR Cookies',
       'description' => 'Configure GDPR Cookies',
       'page callback' => 'backdrop_get_form',
       'page arguments' => array('gdpr_cookies_settings_page'),
       'access arguments' => array('administer gdpr cookies'),
+    ),
+    'admin/config/system/gdpr-cookies/settings' => array(
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'title' => 'Settings',
+      'weight' => -10,
     ),
 
     'admin/config/system/gdpr-cookies/gdpr-cookies-service/%gdpr_cookies_service/delete' => array(
@@ -198,7 +203,7 @@ function gdpr_cookies_menu() {
       'title' => 'Add Third Party Service',
       'page callback' => 'gdpr_cookies_service_add',
       'type' => MENU_NORMAL_ITEM,
-      'access arguments' => array('edit gdpr_cookies_service entities'),
+      'access arguments' => array('create gdpr_cookies_service entities'),
     ),
     'admin/config/system/gdpr-cookies/gdpr-cookies-service/%gdpr_cookies_service' => array(
       'title' => 'Edit Third Party Service',
