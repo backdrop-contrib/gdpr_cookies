@@ -9,5 +9,7 @@
   "gdpr_cookies_remove_credit": 0,
   "gdpr_cookies_default_rejected": 0,
   "gdpr_cookies_page_compression": 1,
-  "gdpr_cookies_privacy_link": ""
+  "gdpr_cookies_privacy_link": "",
+  "gdpr_cookies_icon": "default",
+  "gdpr_cookies_icon_position": "BottomRight"
 }
