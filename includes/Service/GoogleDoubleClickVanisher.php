@@ -16,6 +16,7 @@ class GoogleDoubleClickVanisher extends ThirdPartyServicesVanisher implements Th
   public function vanish(&$content) {
     $scripts = $this->getScripts('doubleclick.net', $this->getAllScripts($content));
 
+    $replacement_scripts = array();
     foreach ($scripts as $script) {
       $data = $this->getData($script);
 
