@@ -275,6 +275,8 @@ function gdpr_cookies_service_form($form, &$form_state, $entity) {
     '#title' => t('Name'),
     '#description' => t('This is the name of the service.'),
     '#default_value' => property_exists($gdpr_cookies_service, 'name') ? $gdpr_cookies_service->getName() : '',
+    '#required' => TRUE,
+    '#element_validate' => array('gdpr_cookies_service_name_validate'),
   );
 
   $form['vanisher'] = array(
@@ -361,6 +363,24 @@ function gdpr_cookies_service_delete($entity) {
  */
 function gdpr_cookies_service_form_validate($form, &$form_state) {
   field_attach_form_validate('gdpr_cookies_service', $form_state['values']['basic_entity'], $form, $form_state);
+}
+
+/**
+ * Validation handler for 'Name' field to ensure it is unique.
+ */
+function gdpr_cookies_service_name_validate($element, &$form_state) {
+  $name = $element['#value'];
+  // Attempt to find a GDPR Cookies Service by the name entered.
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'gdpr_cookies_service')
+        ->propertyCondition('name', $name);
+  $result = $query->execute();
+  // If the result is not empty, it means an entity exists with that name.
+  if (!empty($result)) {
+    form_error($element, t("Name must be unique. Another service exists with the name '!name'", array(
+      '!name' => $name,
+    )));
+  }
 }
 
 /**
@@ -474,7 +494,7 @@ function gdpr_cookies_service_list_entities() {
  * will in turn call the load() method of our entity controller class.
  */
 function gdpr_cookies_service_load_multiple($basic_ids = FALSE, $conditions = array(), $reset = FALSE) {
-  return entity_load('gdpr_cookies_service', $basic_ids, $conditions, $reset);
+  return entity_load_multiple('gdpr_cookies_service', $basic_ids, $conditions, $reset);
 }
 
 /**
@@ -753,7 +773,7 @@ function gdpr_cookies_js_alter(&$js) {
  */
 function gdpr_cookies_config_info() {
   $prefixes['gdpr_cookies.settings'] = array(
-    'label' => t('Gdpr cookies settings'),
+    'label' => t('GDPR Cookies settings'),
     'group' => t('Configuration'),
   );
   return $prefixes;
