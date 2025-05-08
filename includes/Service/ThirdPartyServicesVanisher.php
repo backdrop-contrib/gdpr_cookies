@@ -45,7 +45,7 @@ class ThirdPartyServicesVanisher {
 
     if (isset($result['gdpr_cookies_service'])) {
       $news_items_nids = array_keys($result['gdpr_cookies_service']);
-      $services = entity_load('gdpr_cookies_service', $news_items_nids);
+      $services = entity_load_multiple('gdpr_cookies_service', $news_items_nids);
     }
 
     foreach ($services as $service) {
