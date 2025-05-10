@@ -15,7 +15,7 @@ class VimeoVanisher extends EmbeddedVideoVanisher {
    *
    * @see https://gist.github.com/anjan011/1fcecdc236594e6d700f
    */
-  const VIMEO_VIDEO_ID_REGEX = '~^https?:\/\/(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)(?:$|\/|\?)(?:[?]?.*)$~i';
+   const VIMEO_VIDEO_ID_REGEX = '~https?:\/\/(?:www\.|player\.)?vimeo\.com\/(?:video\/)?(?<id>\d+)(?:$|[\/?])~i';
 
   /**
    * {@inheritdoc}
