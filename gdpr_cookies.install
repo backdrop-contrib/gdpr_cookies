@@ -165,3 +165,10 @@ function gdpr_cookies_update_1002() {
   menu_cache_clear('management');
   cache('admin_bar')->flush();
 }
+
+/**
+ * Remove AdBlocker configuration as this option is no longer supported.
+ */
+function gdpr_cookies_update_1003() {
+  config_clear('gdpr_cookies.settings', 'gdpr_cookies_adblocker');
+}

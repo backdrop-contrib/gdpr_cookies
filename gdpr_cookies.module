@@ -45,7 +45,6 @@ function gdpr_cookies_init() {
       'highPrivacy' => $config->get('gdpr_cookies_high_privacy'),
       'defaultRejected' => $config->get('gdpr_cookies_default_rejected'),
       'hashtag' => $config->get('gdpr_cookies_hashtag'),
-      'adblocker' => $config->get('gdpr_cookies_adblocker'),
       // Appearance & Content.
       'orientation' => $config->get('gdpr_cookies_orientation'),
       'privacyUrl' => $privacy_url,
@@ -540,12 +539,6 @@ function gdpr_cookies_settings_page() {
     '#title' => t('Hashtag'),
     '#description' => t('Automatically open the panel with the hashtag.'),
     '#default_value' => $config->get('gdpr_cookies_hashtag'),
-  );
-  $form['behavior']['gdpr_cookies_adblocker'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Ad-Blocker'),
-    '#description' => t('Display a message if an adblocker is detected.'),
-    '#default_value' => $config->get('gdpr_cookies_adblocker') ? TRUE : FALSE,
   );
 
   $form['appearance'] = array(
