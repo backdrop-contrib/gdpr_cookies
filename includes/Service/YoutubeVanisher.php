@@ -42,7 +42,7 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
       $markup .= 'width="' . $data['width'] . '" ';
       $markup .= 'style="aspect-ratio:16/9;"';
 
-      // Add additional parameters
+      // Add additional parameters.
       if (!empty($data['start'])) {
         $markup .= ' start="' . $data['start'] . '"';
       }
@@ -201,10 +201,10 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
   protected function getIframeAttributes($markup) {
     $attributes = [];
 
-    foreach (self::PRESERVED_PARAMS as $attr) {
-      $pattern = '/' . $attr . '=["\']([^"\']*)["\']|' . $attr . '=([^\s>]*)/i';
+    foreach (self::PRESERVED_PARAMS as $attribute) {
+      $pattern = '/' . $attribute . '=["\']([^"\']*)["\']|' . $attribute . '=([^\s>]*)/i';
       if (preg_match($pattern, $markup, $matches)) {
-        $attributes[$attr] = !empty($matches[1]) ? $matches[1] : $matches[2];
+        $attributes[$attribute] = !empty($matches[1]) ? $matches[1] : $matches[2];
       }
     }
 
