@@ -20,6 +20,19 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
   const YOUTUBE_VIDEO_ID_REGEX = '~^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*~i';
 
   /**
+   * YouTube parameters to preserve when converting iframes.
+   */
+  const PRESERVED_PARAMS = [
+    'start',
+    'end',
+    'autoplay',
+    'loop',
+    'mute',
+    'controls',
+    'showinfo',
+  ];
+
+  /**
    * {@inheritdoc}
    */
   protected function getReplacementMarkup(array $data, ThirdPartyServiceEntityInterface $entity) {
@@ -59,7 +72,7 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
 
     $replacement = '<div class="youtube_player" videoID="@video_id" width="@width" height="@height"';
 
-    // Add additional parameters to template
+    // Add additional parameters to template.
     if (!empty($data['start'])) {
       $replacement .= ' start="@start"';
     }
@@ -118,13 +131,6 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
   /**
    * {@inheritdoc}
    */
-  protected function getReplacementMarkupTemplate() {
-    return '<div class="youtube_player" videoID="@video_id" width="@width" height="@height"></div>@info_text';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   protected function getIframeSearchRegexPattern() {
     return '~(<iframe[^>]*?src=[^>]*?youtu.*?>.*?</iframe>)~is';
   }
@@ -143,9 +149,9 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
     $data = parent::getVideoData($markup);
     $data['video_id'] = $this->extractVideoId($data['src']);
 
-    // Extract additional parameters from URL or iframe attributes
-    $data = array_merge($data, $this->extractUrlParams($data['src']));
-    $data = array_merge($data, $this->extractIframeAttributes($markup));
+    // Extract additional parameters from URL or iframe attributes.
+    $data = array_merge($data, $this->getUrlParams($data['src']));
+    $data = array_merge($data, $this->getIframeAttributes($markup));
 
     return $data;
   }
@@ -159,7 +165,7 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
    * @return array
    *   Array of parameters.
    */
-  protected function extractUrlParams($url) {
+  protected function getUrlParams($url) {
     $params = [];
     $parsed_url = parse_url($url);
 
@@ -167,15 +173,13 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
       parse_str($parsed_url['query'], $query_params);
 
       // Parameters to preserve
-      $preserved_params = ['start', 'end', 'autoplay', 'loop', 'mute', 'controls', 'showinfo'];
-
-      foreach ($preserved_params as $param) {
+      foreach (self::PRESERVED_PARAMS as $param) {
         if (isset($query_params[$param])) {
           $params[$param] = $query_params[$param];
         }
       }
 
-      // Convert 't' to 'start' if exists
+      // Convert 't' to 'start' if exists.
       if (isset($query_params['t'])) {
         $t_value = preg_replace('/s$/i', '', $query_params['t']);
         $params['start'] = $t_value;
@@ -194,18 +198,17 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
    * @return array
    *   Array of attributes.
    */
-  protected function extractIframeAttributes($markup) {
-    $attrs = [];
-    $preserved_attrs = ['start', 'end', 'autoplay', 'loop', 'mute', 'controls', 'showinfo'];
+  protected function getIframeAttributes($markup) {
+    $attributes = [];
 
-    foreach ($preserved_attrs as $attr) {
+    foreach (self::PRESERVED_PARAMS as $attr) {
       $pattern = '/' . $attr . '=["\']([^"\']*)["\']|' . $attr . '=([^\s>]*)/i';
       if (preg_match($pattern, $markup, $matches)) {
-        $attrs[$attr] = !empty($matches[1]) ? $matches[1] : $matches[2];
+        $attributes[$attr] = !empty($matches[1]) ? $matches[1] : $matches[2];
       }
     }
 
-    return $attrs;
+    return $attributes;
   }
 
   /**
@@ -240,4 +243,5 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
   public function __toString() {
     return 'Youtube Vanisher';
   }
+
 }
