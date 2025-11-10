@@ -1,6 +1,7 @@
 <?php
 
 namespace Backdrop\gdpr_cookies\Service;
+
 use Backdrop\gdpr_cookies\Entity\ThirdPartyServiceEntityInterface;
 
 /**
@@ -19,6 +20,19 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
   const YOUTUBE_VIDEO_ID_REGEX = '~^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*~i';
 
   /**
+   * YouTube parameters to preserve when converting iframes.
+   */
+  const PRESERVED_PARAMS = [
+    'start',
+    'end',
+    'autoplay',
+    'loop',
+    'mute',
+    'controls',
+    'showinfo',
+  ];
+
+  /**
    * {@inheritdoc}
    */
   protected function getReplacementMarkup(array $data, ThirdPartyServiceEntityInterface $entity) {
@@ -26,33 +40,92 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
       $data['height'] = "";
       $markup = '<div class="youtube_player" videoID="' . $data['video_id'] . '" ';
       $markup .= 'width="' . $data['width'] . '" ';
-      $markup .= 'style="aspect-ratio:16/9;"></div>';
+      $markup .= 'style="aspect-ratio:16/9;"';
+
+      // Add additional parameters.
+      if (!empty($data['start'])) {
+        $markup .= ' start="' . $data['start'] . '"';
+      }
+      if (!empty($data['end'])) {
+        $markup .= ' end="' . $data['end'] . '"';
+      }
+      if (!empty($data['autoplay'])) {
+        $markup .= ' autoplay="' . $data['autoplay'] . '"';
+      }
+      if (!empty($data['loop'])) {
+        $markup .= ' loop="' . $data['loop'] . '"';
+      }
+      if (!empty($data['mute'])) {
+        $markup .= ' mute="' . $data['mute'] . '"';
+      }
+      if (!empty($data['controls'])) {
+        $markup .= ' controls="' . $data['controls'] . '"';
+      }
+      if (!empty($data['showinfo'])) {
+        $markup .= ' showinfo="' . $data['showinfo'] . '"';
+      }
+
+      $markup .= '></div>';
       $markup .= filter_xss_admin($entity->getInfo());
       return $markup;
     }
+
+    $replacement = '<div class="youtube_player" videoID="@video_id" width="@width" height="@height"';
+
+    // Add additional parameters to template.
+    if (!empty($data['start'])) {
+      $replacement .= ' start="@start"';
+    }
+    if (!empty($data['end'])) {
+      $replacement .= ' end="@end"';
+    }
+    if (!empty($data['autoplay'])) {
+      $replacement .= ' autoplay="@autoplay"';
+    }
+    if (!empty($data['loop'])) {
+      $replacement .= ' loop="@loop"';
+    }
+    if (!empty($data['mute'])) {
+      $replacement .= ' mute="@mute"';
+    }
+    if (!empty($data['controls'])) {
+      $replacement .= ' controls="@controls"';
+    }
+    if (!empty($data['showinfo'])) {
+      $replacement .= ' showinfo="@showinfo"';
+    }
+
+    $replacement .= '></div>@info_text';
 
     return str_replace(
       [
         '@video_id',
         '@width',
         '@height',
+        '@start',
+        '@end',
+        '@autoplay',
+        '@loop',
+        '@mute',
+        '@controls',
+        '@showinfo',
         '@info_text',
       ],
       [
         $data['video_id'],
         $data['width'],
         $data['height'],
+        !empty($data['start']) ? $data['start'] : '',
+        !empty($data['end']) ? $data['end'] : '',
+        !empty($data['autoplay']) ? $data['autoplay'] : '',
+        !empty($data['loop']) ? $data['loop'] : '',
+        !empty($data['mute']) ? $data['mute'] : '',
+        !empty($data['controls']) ? $data['controls'] : '',
+        !empty($data['showinfo']) ? $data['showinfo'] : '',
         filter_xss_admin($entity->getInfo()),
       ],
-      $this->getReplacementMarkupTemplate()
+      $replacement
     );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function getReplacementMarkupTemplate() {
-    return '<div class="youtube_player" videoID="@video_id" width="@width" height="@height"></div>@info_text';
   }
 
   /**
@@ -76,7 +149,66 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
     $data = parent::getVideoData($markup);
     $data['video_id'] = $this->extractVideoId($data['src']);
 
+    // Extract additional parameters from URL or iframe attributes.
+    $data = array_merge($data, $this->getUrlParams($data['src']));
+    $data = array_merge($data, $this->getIframeAttributes($markup));
+
     return $data;
+  }
+
+  /**
+   * Extracts URL parameters from the YouTube URL.
+   *
+   * @param string $url
+   *   The YouTube URL.
+   *
+   * @return array
+   *   Array of parameters.
+   */
+  protected function getUrlParams($url) {
+    $params = [];
+    $parsed_url = parse_url($url);
+
+    if (isset($parsed_url['query'])) {
+      parse_str($parsed_url['query'], $query_params);
+
+      // Parameters to preserve
+      foreach (self::PRESERVED_PARAMS as $param) {
+        if (isset($query_params[$param])) {
+          $params[$param] = $query_params[$param];
+        }
+      }
+
+      // Convert 't' to 'start' if exists.
+      if (isset($query_params['t'])) {
+        $t_value = preg_replace('/s$/i', '', $query_params['t']);
+        $params['start'] = $t_value;
+      }
+    }
+
+    return $params;
+  }
+
+  /**
+   * Extracts attributes from the iframe element.
+   *
+   * @param string $markup
+   *   The iframe markup.
+   *
+   * @return array
+   *   Array of attributes.
+   */
+  protected function getIframeAttributes($markup) {
+    $attributes = [];
+
+    foreach (self::PRESERVED_PARAMS as $attribute) {
+      $pattern = '/' . $attribute . '=["\']([^"\']*)["\']|' . $attribute . '=([^\s>]*)/i';
+      if (preg_match($pattern, $markup, $matches)) {
+        $attributes[$attribute] = !empty($matches[1]) ? $matches[1] : $matches[2];
+      }
+    }
+
+    return $attributes;
   }
 
   /**
