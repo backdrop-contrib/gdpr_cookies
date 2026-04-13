@@ -51,6 +51,9 @@ abstract class EmbeddedVideoVanisher extends IframeVanisher implements IframeVan
       $data = array_combine($matches[1], $matches[4]);
 
       unset($data['iframe']);
+      /* add https: if src includes only '//' */
+    if (!empty($data['src']) && strpos($data['src'], '//') === 0) {
+      $data['src'] = 'https:' . $data['src'];
     }
 
     return $data;
