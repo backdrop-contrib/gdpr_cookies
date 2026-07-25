@@ -64,6 +64,9 @@ function gdpr_cookies_init() {
  * Implements hook_exit().
  */
 function gdpr_cookies_exit() {
+  if (!function_exists('backdrop_get_path')) {
+    return;
+  }
   // Get current path value.
   $current_path = function_exists('current_path') ? current_path() : $_GET['q'];
 
