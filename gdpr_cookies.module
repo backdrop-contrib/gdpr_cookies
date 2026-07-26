@@ -809,7 +809,9 @@ function gdpr_cookies_filter_process($html) {
   // Set the proper encoding.
   $html = '<?xml encoding="UTF-8">' . $html;
   // Prevent adding DOCTYPE and HTML/BODY tags.
-  $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOWARNING);
+  libxml_use_internal_errors(TRUE);
+  $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+  libxml_clear_errors();
 
   // Use XPath to find all elements with srcdoc attribute.
   $xpath = new DOMXPath($dom);
