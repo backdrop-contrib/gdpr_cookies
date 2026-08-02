@@ -36,7 +36,7 @@ class YoutubeVanisher extends EmbeddedVideoVanisher {
    * {@inheritdoc}
    */
   protected function getReplacementMarkup(array $data, ThirdPartyServiceEntityInterface $entity) {
-    $data += ['width' => '', 'height' => ''];
+    $data += array('width' => '', 'height' => '');
     
     if ($data['width'] == "100%") {
       $data['height'] = "";
