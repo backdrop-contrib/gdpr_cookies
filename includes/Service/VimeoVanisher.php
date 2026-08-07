@@ -15,13 +15,13 @@ class VimeoVanisher extends EmbeddedVideoVanisher {
    *
    * @see https://gist.github.com/anjan011/1fcecdc236594e6d700f
    */
-  const VIMEO_VIDEO_ID_REGEX = '~^https?:\/\/(?:www\.|player\.)?vimeo.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)(?:$|\/|\?)(?:[?]?.*)$~i';
+  const VIMEO_VIDEO_ID_REGEX = '~vimeo\.com/(?:.*?/)?(?:video/)?(\d+)~i';
 
   /**
    * {@inheritdoc}
    */
   protected function getIframeSearchRegexPattern() {
-    return '~(<iframe.*?src=([\'"])(.*?player\.vimeo\.com\/video\/.*?)\2.*?>.*?<\/iframe>)~i';
+    return '~(<iframe[^>]+src=([\'"])(.*?vimeo\.com\/.*?\/\d+[^\'"]*)\2[^>]*>.*?<\/iframe>)~i';
   }
 
   /**
@@ -58,13 +58,10 @@ class VimeoVanisher extends EmbeddedVideoVanisher {
    *   The video id or NULL.
    */
   protected function extractVideoId($url) {
-    $matches = array();
-    $ret = preg_match(self::VIMEO_VIDEO_ID_REGEX, $url, $matches);
-    if ($ret != FALSE && $ret == 1) {
-      return $matches[3];
+    if (preg_match(self::VIMEO_VIDEO_ID_REGEX, $url, $matches)) {
+      return $matches[1] ?? null;
     }
-
-    return NULL;
+    return null;
   }
 
   /**
